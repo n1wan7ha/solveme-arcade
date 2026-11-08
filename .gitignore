@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+
+# Logs
+*.log
+
+# OS artefacts
+.DS_Store
+
+# Test coverage
+coverage/
+
+# Editor settings
+.vscode/
+.idea/
+
+# Docker volume data
+infra/pgdata/
+

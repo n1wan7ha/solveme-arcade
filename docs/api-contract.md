@@ -18,7 +18,7 @@
 | `POST` | `/games/:gameId/runs` | `{ score, attempts, correct, maxCombo, startedAt }` | `201 Run` |
 | `GET`  | `/leaderboard?gameId=…` | — | `200 { rank, username, score }[]` |
 | `GET`  | `/me/runs` | — | `200 Run[]` |
-| `GET`  | `/fish/puzzle?category=…` | — | `200 { sol: number, image: string }` |
+| `GET`  | `/fish/puzzle?category=…` | — | `200 { sol: number, image: string }` (`image` is base64 PNG; `category` is fish, banana, tomato or smile; `502` if the Fish API fails) |
 
 ## WebSocket Events (Socket.IO)
 

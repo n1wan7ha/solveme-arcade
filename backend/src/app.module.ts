@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { AuthModule } from './auth/auth.module.js';
+import { FishApiModule } from './fish-api/fish-api.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 
 @Module({
@@ -21,6 +22,7 @@ import { PrismaModule } from './prisma/prisma.module.js';
     // Global DB access: feature modules inject PrismaService directly.
     PrismaModule,
     AuthModule,
+    FishApiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

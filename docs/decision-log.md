@@ -10,4 +10,6 @@
 | 2026-11-09 | Kept NestJS 12 and Vitest from the scaffold | Downgrade to NestJS 10 and Jest as first planned | The installed versions work and are maintained; downgrading adds risk without changing the module architecture |
 | 2026-11-09 | JWT access tokens instead of server sessions | Session store in Redis | Requests are verified from the signature with no lookup; the database-backed refresh token still allows revocation |
 | 2026-11-09 | HttpOnly SameSite=Strict cookies instead of localStorage | localStorage with a Bearer header | Browser JavaScript cannot read the tokens, which limits XSS theft; SameSite=Strict stops them being sent cross-site |
+| 2026-11-09 | Retry Fish API 3 times with exponential backoff (300, 900, 2700 ms) on network errors and 5xx only | No retries; fixed-delay retries; retrying every error | Rides out brief outages without hammering the server; 4xx and malformed responses will not improve on retry, so they fail immediately |
+| 2026-11-09 | `FISH_API_URL` is the base `https://marcconrad.com/uob` | Full `/fish/api.php` URL as first planned | Each category has its own path. Testing showed the full URL plus a category path still returns 200 with a fish puzzle, silently serving the wrong category |
 

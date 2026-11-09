@@ -25,3 +25,6 @@ coverage/
 # Docker volume data
 infra/pgdata/
 
+# Agent memory (private, not for version control)
+memory.md
+

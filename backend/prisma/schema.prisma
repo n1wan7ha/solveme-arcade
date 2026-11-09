@@ -1,0 +1,96 @@
+// =============================================================================
+// WHY THIS DESIGN:
+//   - Normalised Game table so leaderboard filters are fast and games are
+//     data-driven (no hardcoding in code).
+//   - Run holds every finished game, giving a full audit trail for the
+//     leaderboard and "my history" views.
+//   - RefreshToken supports rotation + revocation without a session store
+//     (video talking point for the virtual-identity rubric theme).
+//   - @@index on (gameId, score DESC) makes the leaderboard query O(log n).
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// User — the virtual identity anchor; passwords are always stored hashed.
+// ---------------------------------------------------------------------------
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  role         Role     @default(PLAYER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  runs          Run[]
+  refreshTokens RefreshToken[]
+}
+
+enum Role {
+  PLAYER
+  ADMIN
+}
+
+// ---------------------------------------------------------------------------
+// RefreshToken — one row per active session; revoked on logout / rotation.
+// ---------------------------------------------------------------------------
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique // SHA-256 of the raw refresh JWT (deterministic, so it can be looked up)
+  expiresAt DateTime
+  revokedAt DateTime? // null = still valid
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Game — catalogue entry; slug is the primary key so URLs are readable.
+// ---------------------------------------------------------------------------
+model Game {
+  id       String   @id // slug: snake, fruit-ninja, …
+  name     String
+  category String   // fish | smile | tomato | banana
+  type     GameType
+  emoji    String
+
+  runs Run[]
+}
+
+enum GameType {
+  PUZZLE
+  SLASH
+  SNAKE
+  ARCADE
+}
+
+// ---------------------------------------------------------------------------
+// Run — one record per completed game attempt.
+// ---------------------------------------------------------------------------
+model Run {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gameId     String
+  game       Game     @relation(fields: [gameId], references: [id])
+  score      Int
+  attempts   Int
+  correct    Int
+  maxCombo   Int
+  startedAt  DateTime
+  finishedAt DateTime @default(now())
+
+  // Powers leaderboard per-game and per-user queries
+  @@index([userId, gameId, score(sort: Desc)])
+  @@index([gameId, score(sort: Desc)])
+}
+

@@ -7,6 +7,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
+import { PrismaModule } from './prisma/prisma.module.js';
 
 @Module({
   imports: [
@@ -16,6 +17,8 @@ import { AppService } from './app.service.js';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    // Global DB access: feature modules inject PrismaService directly.
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

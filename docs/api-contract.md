@@ -4,7 +4,7 @@
 
 | Method | Path | Body | Response |
 |--------|------|------|----------|
-| `POST` | `/auth/register` | `{ username, password }` | `201 { id, username, role }` |
+| `POST` | `/auth/register` | `{ username, password }` | `201 { id, username, role }` + `Set-Cookie: access_token, refresh_token` |
 | `POST` | `/auth/login` | `{ username, password }` | `200 { user }` + `Set-Cookie: access_token, refresh_token` |
 | `POST` | `/auth/refresh` | _(cookie)_ | `200 { user }` + rotated cookies |
 | `POST` | `/auth/logout` | _(cookie)_ | `204` (clears cookies, revokes refresh) |

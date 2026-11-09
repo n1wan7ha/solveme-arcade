@@ -16,7 +16,7 @@
 |--------|------|------|----------|
 | `GET`  | `/games` | — | `200 Game[]` |
 | `POST` | `/games/:gameId/runs` | `{ score, attempts, correct, maxCombo, startedAt }` | `201 Run` |
-| `GET`  | `/leaderboard?gameId=…` | — | `200 { rank, username, score }[]` |
+| `GET`  | `/leaderboard?gameId=…` | — | `200 { rank, username, score }[]`, top 100. With a `gameId`, ranks each player's best run; with `all` or no `gameId`, ranks total points |
 | `GET`  | `/me/runs` | — | `200 Run[]` |
 | `GET`  | `/fish/puzzle?category=…` | — | `200 { sol: number, image: string }` (`image` is base64 PNG; `category` is fish, banana, tomato or smile; `502` if the Fish API fails) |
 

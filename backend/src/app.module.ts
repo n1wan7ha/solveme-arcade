@@ -9,7 +9,10 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { AuthModule } from './auth/auth.module.js';
 import { FishApiModule } from './fish-api/fish-api.module.js';
+import { GamesModule } from './games/games.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { RedisModule } from './redis/redis.module.js';
+import { ScoresModule } from './scores/scores.module.js';
 
 @Module({
   imports: [
@@ -21,8 +24,11 @@ import { PrismaModule } from './prisma/prisma.module.js';
     }),
     // Global DB access: feature modules inject PrismaService directly.
     PrismaModule,
+    RedisModule,
     AuthModule,
     FishApiModule,
+    GamesModule,
+    ScoresModule,
   ],
   controllers: [AppController],
   providers: [AppService],

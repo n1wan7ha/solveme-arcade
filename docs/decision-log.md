@@ -12,4 +12,6 @@
 | 2026-11-09 | HttpOnly SameSite=Strict cookies instead of localStorage | localStorage with a Bearer header | Browser JavaScript cannot read the tokens, which limits XSS theft; SameSite=Strict stops them being sent cross-site |
 | 2026-11-09 | Retry Fish API 3 times with exponential backoff (300, 900, 2700 ms) on network errors and 5xx only | No retries; fixed-delay retries; retrying every error | Rides out brief outages without hammering the server; 4xx and malformed responses will not improve on retry, so they fail immediately |
 | 2026-11-09 | `FISH_API_URL` is the base `https://marcconrad.com/uob` | Full `/fish/api.php` URL as first planned | Each category has its own path. Testing showed the full URL plus a category path still returns 200 with a fish puzzle, silently serving the wrong category |
+| 2026-11-09 | Redis cache-aside for games (5 min) and leaderboards (30 s, cleared on each new run) | No cache; in-memory cache | Leaderboards are read far more often than written; Redis is shared across backend instances. Cache errors fall back to the database so Redis is never a single point of failure |
+| 2026-11-09 | Leaderboard ranks best run per game, total points across all games | Every run as its own row | Matches the prototype and stops one player filling the board |
 

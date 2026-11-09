@@ -14,4 +14,7 @@
 | 2026-11-09 | `FISH_API_URL` is the base `https://marcconrad.com/uob` | Full `/fish/api.php` URL as first planned | Each category has its own path. Testing showed the full URL plus a category path still returns 200 with a fish puzzle, silently serving the wrong category |
 | 2026-11-09 | Redis cache-aside for games (5 min) and leaderboards (30 s, cleared on each new run) | No cache; in-memory cache | Leaderboards are read far more often than written; Redis is shared across backend instances. Cache errors fall back to the database so Redis is never a single point of failure |
 | 2026-11-09 | Leaderboard ranks best run per game, total points across all games | Every run as its own row | Matches the prototype and stops one player filling the board |
+| 2026-11-09 | Socket.IO for gameplay, SSE for the leaderboard | Polling; WebSockets for everything | Socket.IO gives bidirectional messaging and reconnection. SSE is simpler for a one-way feed. Polling wastes battery and adds latency |
+| 2026-11-09 | Emit `run.created` from `RunsService`, not the gateway | Emit only in the WebSocket handler as first planned | Games save runs over REST, so a gateway-only event would never fire during real play. One emit point covers both routes |
+| 2026-11-09 | Authenticate sockets in Socket.IO middleware and recheck token expiry on `game:submit` | Authenticate only once on connect | Invalid tokens never get a connection, and a long-lived socket cannot outlast its 15-minute token |
 

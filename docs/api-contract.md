@@ -22,22 +22,30 @@
 
 ## WebSocket Events (Socket.IO)
 
-> TBD — will be filled in during Module 4.
+The handshake is authenticated with the `access_token` cookie. A missing or invalid token fails with a `connect_error` of `Unauthorized`.
 
 ### Client → Server
 
-| Event | Payload |
-|-------|---------|
-| `game:submit` | `{ gameId, score, attempts, correct, maxCombo, startedAt }` |
+| Event | Payload | Result |
+|-------|---------|--------|
+| `game:submit` | `{ gameId, score, attempts, correct, maxCombo, startedAt }` | Acknowledged with the saved `Run`. On failure the server emits `exception` with `{ status: "error", message }` |
 
 ### Server → Client
 
-| Event | Payload |
-|-------|---------|
-| `score:updated` | TBD |
-| `run:saved` | TBD |
-| `leaderboard:changed` | TBD |
-| `game:tick` | TBD |
+| Event | Sent to | Payload |
+|-------|---------|---------|
+| `run:saved` | The player who finished the run | `Run` |
+| `score:updated` | Everyone connected | `{ username, gameId, score }` |
+| `leaderboard:changed` | Everyone connected | `{ gameId, leaderboard: { rank, username, score }[] }`, sent once for the game and once with `gameId: "all"` |
+| `game:tick` | Everyone connected, every 5 seconds | `{ serverTime, playersOnline }` |
+
+Runs saved through `POST /games/:gameId/runs` trigger the same events.
+
+## Server-Sent Events
+
+| Method | Path | Events |
+|--------|------|--------|
+| `GET` | `/sse/leaderboard` | `text/event-stream`; each `data:` line is `{ gameId, leaderboard }` |
 
 ## Error Format
 

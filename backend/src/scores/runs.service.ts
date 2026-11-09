@@ -4,14 +4,16 @@
  * Drafted with an LLM (Claude Code).
  */
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Prisma } from '@prisma/client';
 import type { Run } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { RedisService } from '../redis/redis.service.js';
 import type { CreateRunDto } from './dto/create-run.dto.js';
 import type { LeaderboardEntry } from './interfaces/leaderboard-entry.interface.js';
+import { ALL_GAMES, RUN_CREATED } from './scores.events.js';
+import type { RunCreatedEvent } from './scores.events.js';
 
-const ALL_GAMES = 'all';
 const LEADERBOARD_SIZE = 100;
 const LEADERBOARD_CACHE_TTL_SECONDS = 30;
 
@@ -23,6 +25,7 @@ export class RunsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cache: RedisService,
+    private readonly events: EventEmitter2,
   ) {}
 
   async createRun(
@@ -31,8 +34,9 @@ export class RunsService {
     dto: CreateRunDto,
   ): Promise<Run> {
     try {
-      const run = await this.prisma.run.create({
+      const { user, ...run } = await this.prisma.run.create({
         data: { ...dto, startedAt: new Date(dto.startedAt), userId, gameId },
+        include: { user: { select: { username: true } } },
       });
 
       // A new score makes both of these out of date.
@@ -40,6 +44,10 @@ export class RunsService {
         this.leaderboardKey(gameId),
         this.leaderboardKey(ALL_GAMES),
       );
+
+      // Emitted here so runs saved over REST and WebSocket behave the same.
+      const event: RunCreatedEvent = { run, username: user.username };
+      this.events.emit(RUN_CREATED, event);
       return run;
     } catch (error) {
       if (

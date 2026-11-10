@@ -18,6 +18,7 @@
 | `POST` | `/games/:gameId/runs` | `{ score, attempts, correct, maxCombo, startedAt }` | `201 Run` |
 | `GET`  | `/leaderboard?gameId=…` | — | `200 { rank, username, score }[]`, top 100. With a `gameId`, ranks each player's best run; with `all` or no `gameId`, ranks total points |
 | `GET`  | `/me/runs` | — | `200 Run[]` |
+| `GET`  | `/health` | — | `200 { status: "ok" | "degraded", checks: { database, redis, fishApi }, uptimeSeconds }`; `503` with `status: "down"` when the database is unreachable |
 | `GET`  | `/fish/puzzle?category=…` | — | `200 { sol: number, image: string }` (`image` is base64 PNG; `category` is fish, banana, tomato or smile; `502` if the Fish API fails) |
 
 ## WebSocket Events (Socket.IO)

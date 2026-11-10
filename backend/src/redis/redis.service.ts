@@ -49,6 +49,15 @@ export class RedisService implements OnModuleDestroy {
     }
   }
 
+  /** For GET /health: true if Redis answers PING. */
+  async ping(): Promise<boolean> {
+    try {
+      return (await this.client.ping()) === 'PONG';
+    } catch {
+      return false;
+    }
+  }
+
   onModuleDestroy(): void {
     this.client.disconnect();
   }

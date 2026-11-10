@@ -58,6 +58,16 @@ export class FishApiService {
     }
   }
 
+  /** For GET /health: one attempt, no retries, so the check stays quick. */
+  async ping(): Promise<boolean> {
+    try {
+      this.parseCsv(await this.fetchCsv('fish'));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   private async fetchCsv(category: FishCategory): Promise<string> {
     const baseUrl = this.config.getOrThrow<string>('FISH_API_URL');
     const response = await firstValueFrom(

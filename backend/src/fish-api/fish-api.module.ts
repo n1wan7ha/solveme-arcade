@@ -21,5 +21,6 @@ import { FishApiService } from './fish-api.service.js';
   ],
   controllers: [FishApiController],
   providers: [FishApiService],
+  exports: [FishApiService], // used by the health check
 })
 export class FishApiModule {}

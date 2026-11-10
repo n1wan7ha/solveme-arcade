@@ -11,6 +11,7 @@ import { AppService } from './app.service.js';
 import { AuthModule } from './auth/auth.module.js';
 import { FishApiModule } from './fish-api/fish-api.module.js';
 import { GamesModule } from './games/games.module.js';
+import { HealthModule } from './health/health.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { RealtimeModule } from './realtime/realtime.module.js';
 import { RedisModule } from './redis/redis.module.js';
@@ -33,6 +34,7 @@ import { ScoresModule } from './scores/scores.module.js';
     GamesModule,
     ScoresModule,
     RealtimeModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

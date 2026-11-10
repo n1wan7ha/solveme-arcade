@@ -6,12 +6,9 @@
  */
 import type { Run } from '../api/games.api';
 import { GAMES } from '../games/registry';
+import { levelOf, levelStart } from '../games/shared/level';
 
 export const XP_SEGMENTS = 20;
-
-/** Level n starts at 40 × (n-1)² points, so each level takes longer. */
-export const levelOf = (totalScore: number) => 1 + Math.floor(Math.sqrt(totalScore / 40));
-const levelStart = (level: number) => 40 * (level - 1) ** 2;
 
 export interface Summary {
   totalScore: number;

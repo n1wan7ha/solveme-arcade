@@ -1,30 +1,20 @@
 /**
- * Why this exists: the /play/:gameId route. For now it confirms the game
- * exists; Module 6 renders the real game component here.
+ * Why this exists: the /play/:gameId route. It looks the game up in the
+ * registry and renders its component. "Play again" bumps a counter used as
+ * the React key, which mounts a completely fresh game.
  * Drafted with an LLM (Claude Code).
  */
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
-import { DotText } from '../ui/DotText';
+import { useState } from 'react';
+import { Navigate, useParams } from 'react-router-dom';
 import { findGame } from './registry';
 
 export function PlayPage() {
   const { gameId } = useParams();
-  const navigate = useNavigate();
+  const [round, setRound] = useState(0);
   const game = findGame(gameId);
 
   if (!game) return <Navigate to="/dashboard" replace />;
 
-  return (
-    <section className="fade-in flex-1 flex items-center justify-center">
-      <Card className="p-6 max-w-sm w-full text-center">
-        <div className="text-5xl float">{game.emoji}</div>
-        <DotText as="h2" className="text-2xl mt-2">{game.name.toUpperCase()}</DotText>
-        <p className="my-4 text-sm opacity-80">{game.how}</p>
-        <p className="mb-4 text-xs opacity-60">This game arrives in Module 6.</p>
-        <Button variant="secondary" onClick={() => navigate('/dashboard')}>⟵ DASHBOARD</Button>
-      </Card>
-    </section>
-  );
+  const { Component } = game;
+  return <Component key={`${game.slug}-${round}`} meta={game} onPlayAgain={() => setRound((n) => n + 1)} />;
 }

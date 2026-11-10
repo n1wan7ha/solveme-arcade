@@ -38,7 +38,9 @@ A plan for the video. Timings are a guide; rehearse once with a 2-minute dry run
 - `backend/src/fish-api/fish-api.service.ts`: URL building, CSV parsing, retries with backoff, correlation-ID logging, 502 on failure.
 - Browser DevTools, Network tab: start a puzzle and filter for `marcconrad`. There are zero requests; everything goes to `/fish/puzzle`.
 - Show the backend log lines for one puzzle (`correlationId`, `attempt`, `ms`, `success`).
-- Failure demo: stop the backend, start it with `FISH_API_URL=https://marcconrad.invalid/uob npm run start:dev`, request a puzzle, and show attempts 1 to 4 with growing gaps, then the 502. Restart it normally afterwards.
+- Failure demo: stop the backend and start it with a broken Fish API address, request a puzzle, and show attempts 1 to 4 with growing gaps, then the 502.
+  - PowerShell: `$env:FISH_API_URL='https://marcconrad.invalid/uob'; npm run start:dev`, and afterwards `Remove-Item Env:FISH_API_URL` before restarting normally.
+  - Git Bash: `FISH_API_URL=https://marcconrad.invalid/uob npm run start:dev`.
 - `GET http://localhost:3000/health`, then `docker stop solveme_redis`: the status becomes "degraded" and the leaderboard still loads. Run `docker start solveme_redis`.
 
 ## 7:00 – 9:00 · Virtual identity

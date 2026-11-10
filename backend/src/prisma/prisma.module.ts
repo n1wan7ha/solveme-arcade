@@ -4,6 +4,7 @@
  *
  * WHY @Global(): avoids repetitive imports across AuthModule, GamesModule,
  * RunsModule, etc. — keeps modules slim (rubric theme #1: low coupling).
+ * Drafted with an LLM coding assistant.
  */
 import { Global, Module } from '@nestjs/common';
 import { PrismaService } from './prisma.service.js';

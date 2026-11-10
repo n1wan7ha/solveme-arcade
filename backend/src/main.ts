@@ -2,6 +2,7 @@
  * Application entry point.
  * Configures global middleware, pipes, CORS, and cookie parsing
  * before the HTTP server starts listening.
+ * Drafted with an LLM coding assistant.
  */
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';

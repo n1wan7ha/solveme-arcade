@@ -2,6 +2,7 @@
  * Root application module.
  * Imports ConfigModule globally so every other module can read process.env
  * via NestJS's ConfigService without re-importing it.
+ * Drafted with an LLM coding assistant.
  */
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';

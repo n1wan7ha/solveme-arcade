@@ -6,6 +6,7 @@
  *
  * Run via:  npx prisma db seed
  * (Wired in package.json under "prisma.seed")
+ * Drafted with an LLM coding assistant.
  */
 
 import { PrismaClient, GameType } from '@prisma/client';

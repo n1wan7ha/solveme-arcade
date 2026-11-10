@@ -1,0 +1,5 @@
+# Keep Unix line endings where tools require them (make, Docker, nginx, sh).
+Makefile text eol=lf
+Dockerfile text eol=lf
+*.conf text eol=lf
+*.sh text eol=lf

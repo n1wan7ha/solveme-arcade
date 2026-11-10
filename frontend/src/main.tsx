@@ -1,5 +1,6 @@
 /**
  * Why this exists: mounts the React app into index.html.
+ * Started from the Vite React template; edited with an LLM (Claude Code).
  */
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';

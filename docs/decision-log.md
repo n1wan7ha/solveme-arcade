@@ -17,4 +17,9 @@
 | 2026-11-09 | Socket.IO for gameplay, SSE for the leaderboard | Polling; WebSockets for everything | Socket.IO gives bidirectional messaging and reconnection. SSE is simpler for a one-way feed. Polling wastes battery and adds latency |
 | 2026-11-09 | Emit `run.created` from `RunsService`, not the gateway | Emit only in the WebSocket handler as first planned | Games save runs over REST, so a gateway-only event would never fire during real play. One emit point covers both routes |
 | 2026-11-09 | Authenticate sockets in Socket.IO middleware and recheck token expiry on `game:submit` | Authenticate only once on connect | Invalid tokens never get a connection, and a long-lived socket cannot outlast its 15-minute token |
+| 2026-11-11 | Zustand stores for auth and live game state; `AuthProvider` only boots the session | React Context for all state | Any component reads a slice without prop drilling or re-rendering the whole tree; the socket writes to `gameStore` and components only read |
+| 2026-11-11 | One shared in-flight `/auth/refresh` for concurrent 401s | Each failing request refreshes on its own | Refresh tokens rotate and work once, so parallel refreshes would log the user out |
+| 2026-11-11 | Game presentation (colour, rules text) in `frontend/src/games/registry.ts`; database `Game` rows for integrity | Render the dashboard from `GET /games` | Colours and help text are UI concerns; the seed mirrors the same slugs, names and emojis |
+| 2026-11-11 | Prototype CSS placed in Tailwind `@layer base` and `components` | Paste it as plain CSS | Unlayered CSS beats Tailwind utilities, which forced `!important` in the prototype; layers let utilities override cleanly |
+| 2026-11-11 | Renamed the slice game "Fruit Slash" (slug `fruit-ninja` kept) | Keep "Fruit Ninja" | Avoids using an existing commercial game's name; the slug stays so the agreed API and seed are unchanged |
 

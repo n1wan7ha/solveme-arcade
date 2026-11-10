@@ -67,18 +67,17 @@ export class GameGateway
         .catch(() => next(new Error('Unauthorized')));
     });
 
-    this.tickTimer = setInterval(() => {
-      this.server.emit('game:tick', {
-        serverTime: new Date().toISOString(),
-        playersOnline: this.server.engine.clientsCount,
-      });
-    }, TICK_INTERVAL_MS);
+    this.tickTimer = setInterval(
+      () => this.server.emit('game:tick', this.tick()),
+      TICK_INTERVAL_MS,
+    );
   }
 
   /** Each user gets a private room, so a message can reach all their tabs. */
   handleConnection(client: Socket): void {
     const user = client.data.user as AuthUser;
     void client.join(this.userRoom(user.id));
+    client.emit('game:tick', this.tick()); // no 5-second wait for the first one
   }
 
   // The global ValidationPipe from main.ts checks the body against SubmitRunDto.
@@ -137,6 +136,13 @@ export class GameGateway
       .split('; ')
       .find((part) => part.startsWith(prefix));
     return cookie?.slice(prefix.length) ?? '';
+  }
+
+  private tick() {
+    return {
+      serverTime: new Date().toISOString(),
+      playersOnline: this.server.engine.clientsCount,
+    };
   }
 
   private userRoom(userId: string): string {

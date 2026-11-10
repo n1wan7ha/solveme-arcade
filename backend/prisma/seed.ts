@@ -14,16 +14,17 @@ import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 // ---------------------------------------------------------------------------
-// Game catalogue — slugs must match frontend registry exactly
+// Game catalogue — slugs, names, categories and emojis must match
+// frontend/src/games/registry.ts (which mirrors the prototype's GAMES object)
 // ---------------------------------------------------------------------------
 const GAMES = [
-  { id: 'snake',         name: 'Snake',          category: 'fish',   type: GameType.SNAKE,  emoji: '🐍' },
-  { id: 'fruit-ninja',   name: 'Fruit Ninja',    category: 'banana', type: GameType.SLASH,  emoji: '🍌' },
-  { id: 'star-scraper',  name: 'Star Scraper',   category: 'smile',  type: GameType.ARCADE, emoji: '⭐' },
+  { id: 'snake',         name: 'Snake',          category: 'banana', type: GameType.SNAKE,  emoji: '🐍' },
+  { id: 'fruit-ninja',   name: 'Fruit Slash',    category: 'smile',  type: GameType.SLASH,  emoji: '🍉' },
+  { id: 'star-scraper',  name: 'Star Scraper',   category: 'tomato', type: GameType.ARCADE, emoji: '🚀' },
   { id: 'fish-count',    name: 'Fish Count',     category: 'fish',   type: GameType.PUZZLE, emoji: '🐟' },
   { id: 'banana-streak', name: 'Banana Streak',  category: 'banana', type: GameType.PUZZLE, emoji: '🍌' },
-  { id: 'tomato-rush',   name: 'Tomato Rush',    category: 'tomato', type: GameType.ARCADE, emoji: '🍅' },
-  { id: 'smile-cove',    name: 'Smile Cove',     category: 'smile',  type: GameType.PUZZLE, emoji: '😊' },
+  { id: 'tomato-rush',   name: 'Tomato Rush',    category: 'tomato', type: GameType.PUZZLE, emoji: '🍅' },
+  { id: 'smile-cove',    name: 'Smile Cove',     category: 'smile',  type: GameType.PUZZLE, emoji: '😀' },
 ];
 
 // ---------------------------------------------------------------------------

@@ -1,0 +1,151 @@
+/*
+ * Why this exists: Tailwind plus the prototype's hand-written design system
+ * (colours, chunky borders, dot-matrix font, animations), ported from
+ * solveme-arcade.html. Custom classes sit in Tailwind layers so utility
+ * classes can still override them without "!important".
+ * Ported from the student's prototype; layering drafted with an LLM (Claude Code).
+ */
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --b: #1d4ed8; /* blue */
+    --r: #ef2b3a; /* red */
+    --ink: #0a0f2c; /* outlines and text */
+  }
+  html {
+    background: var(--b);
+  }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    color: var(--ink);
+    background:
+      radial-gradient(rgba(255, 255, 255, 0.25) 1.5px, transparent 1.8px) 0 0 / 16px 16px,
+      var(--b);
+  }
+  canvas {
+    touch-action: none;
+  }
+}
+
+@layer components {
+  .dot {
+    font-family: 'Doto', 'DotGothic16', ui-monospace, monospace;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+  }
+  .bd { border: 2.5px solid var(--ink); }
+  .bg-r { background: var(--r); color: #fff; }
+  .bg-b { background: var(--b); color: #fff; }
+  .tx-r { color: var(--r); }
+  .tx-b { color: var(--b); }
+
+  .card {
+    background: #fff;
+    border: 2.5px solid var(--ink);
+    border-radius: 18px;
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+
+  .btn,
+  .btn2 {
+    font: inherit;
+    font-weight: 700;
+    border: 2.5px solid var(--ink);
+    border-radius: 14px;
+    padding: 0.65rem 1.1rem;
+    box-shadow: 3px 3px 0 var(--ink);
+    transition: transform 0.12s, box-shadow 0.12s;
+    cursor: pointer;
+  }
+  .btn { background: var(--r); color: #fff; }
+  .btn2 { background: #fff; color: var(--ink); }
+  .btn:hover,
+  .btn2:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+  .btn:active,
+  .btn2:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink); }
+  .btn:disabled,
+  .btn2:disabled { opacity: 0.6; cursor: wait; transform: none; }
+
+  .inp {
+    width: 100%;
+    font: inherit;
+    border: 2.5px solid var(--ink);
+    border-radius: 12px;
+    padding: 0.6rem 0.9rem;
+    background: #fff;
+    outline: none;
+  }
+  .inp:focus { box-shadow: 0 0 0 4px #ef2b3a66; }
+
+  .lab {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.3rem;
+  }
+
+  .lbt {
+    padding: 0.35rem 0.7rem;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border: 2px solid transparent;
+    white-space: nowrap;
+    cursor: pointer;
+    text-align: center;
+  }
+  .lbt.on { background: var(--b); color: #fff; border-color: var(--ink); }
+
+  .tile {
+    border: 2.5px solid var(--ink);
+    border-radius: 16px;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+  }
+  .tile:hover { transform: translateY(-4px) rotate(-1deg); box-shadow: 4px 8px 0 var(--ink); }
+  .tile:active { transform: translate(3px, 3px); box-shadow: none; }
+  .t-b { background: var(--b); color: #fff; }
+  .t-r { background: var(--r); color: #fff; }
+  .t-w { background: #fff; color: var(--ink); }
+
+  /* Animations */
+  .fade-in { animation: fi 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+  .float { display: inline-block; animation: fl 3s ease-in-out infinite; }
+  .glow { animation: gl 1.8s infinite; }
+  .shake { animation: sk 0.4s; }
+  .pop { animation: pp 0.45s; }
+  .sq {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--ink);
+    background: var(--b);
+    animation: snk 1s ease-in-out infinite;
+  }
+  .fl {
+    position: fixed;
+    bottom: -60px;
+    z-index: 0;
+    opacity: 0.22;
+    animation: rise linear infinite;
+    pointer-events: none;
+    filter: grayscale(0.2);
+  }
+}
+
+@keyframes fi { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes fl { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-6px) rotate(4deg); } }
+@keyframes gl {
+  0%, 100% { box-shadow: 3px 3px 0 var(--ink), 0 0 0 0 #ef2b3a88; }
+  50% { box-shadow: 3px 3px 0 var(--ink), 0 0 0 8px #ef2b3a00; }
+}
+@keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes snk { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes sk { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+@keyframes pp { 50% { transform: scale(1.04); box-shadow: 0 0 0 6px #ef2b3a66; } }
+@keyframes rise { to { transform: translateY(-115vh) rotate(360deg); } }

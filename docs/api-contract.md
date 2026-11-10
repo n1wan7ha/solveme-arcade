@@ -37,7 +37,7 @@ The handshake is authenticated with the `access_token` cookie. A missing or inva
 | `run:saved` | The player who finished the run | `Run` |
 | `score:updated` | Everyone connected | `{ username, gameId, score }` |
 | `leaderboard:changed` | Everyone connected | `{ gameId, leaderboard: { rank, username, score }[] }`, sent once for the game and once with `gameId: "all"` |
-| `game:tick` | Everyone connected, every 5 seconds | `{ serverTime, playersOnline }` |
+| `game:tick` | Each new connection at once, then everyone every 5 seconds | `{ serverTime, playersOnline }` |
 
 Runs saved through `POST /games/:gameId/runs` trigger the same events.
 

@@ -42,6 +42,40 @@ services:
       postgres:
         condition: service_healthy
 
+  # ---------------------------------------------------------------------------
+  # Optional: the whole app in containers. Started only with "--profile app".
+  # Day-to-day development runs the backend and frontend with npm instead.
+  # ---------------------------------------------------------------------------
+  backend:
+    build: ../backend
+    container_name: solveme_backend
+    profiles: ["app"]
+    restart: unless-stopped
+    env_file: ../.env
+    environment:
+      NODE_ENV: production
+      # Inside Docker the services reach each other by name, not localhost.
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      REDIS_URL: redis://redis:6379
+      FRONTEND_URL: http://localhost:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build: ../frontend
+    container_name: solveme_frontend
+    profiles: ["app"]
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
 volumes:
   pgdata:
 

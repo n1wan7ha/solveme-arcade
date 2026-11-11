@@ -1,18 +1,17 @@
 /**
- * Why this exists: everything the three canvas games share on screen: header,
- * stage, pause overlay, fullscreen, sound, the game loop, and saving the run
- * when the engine reports game over. Each game passes in its engine, renderer
- * and input handlers.
+ * Why this exists: everything the three canvas games share on screen: the
+ * arcade cabinet, the CRT stage, pause overlay, fullscreen, the game loop, and
+ * saving the run when the engine reports game over. Each game passes in its
+ * engine, renderer and input handlers.
  * Drafted with an LLM (Claude Code), from the prototype's v-play section.
  */
 import { useEffect, useRef, useState } from 'react';
 import type { HTMLAttributes, ReactNode, RefObject } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../ui/Button';
-import { DotText } from '../../ui/DotText';
+import { ArcadeCabinet } from './ArcadeCabinet';
 import { play } from './audio';
 import type { BaseEngine, BaseState } from './engine';
-import { GameHeader } from './GameHeader';
 import { H, SCALE, W } from './math';
 import { ResultModal } from './ResultModal';
 import type { Hud, RunStats } from './types';
@@ -26,7 +25,7 @@ interface ActionGameShellProps<S extends BaseState> extends GameProps {
   canvasRef: RefObject<HTMLCanvasElement | null>;
   canvasProps?: HTMLAttributes<HTMLCanvasElement>;
   controls: string;
-  children?: ReactNode; // extra controls under the stage, e.g. Snake's D-pad
+  children?: ReactNode; // extra on-screen controls, e.g. Snake's D-pad
 }
 
 const sameHud = (a: Hud, b: Hud) => a.score === b.score && a.combo === b.combo && a.lives === b.lives;
@@ -41,6 +40,7 @@ export function ActionGameShell<S extends BaseState>({
   const [paused, setPaused] = useState(false);
   const [result, setResult] = useState<RunStats | null>(null);
   const ended = useRef(false);
+  const hiScore = Math.max(0, ...recorder.history.filter((r) => r.gameId === meta.slug).map((r) => r.score));
 
   useGameLoop(canvasRef, engine, draw, () => {
     engine.drainSounds().forEach(play);
@@ -79,40 +79,42 @@ export function ActionGameShell<S extends BaseState>({
     else void stageRef.current?.requestFullscreen?.();
   }
 
+  const screen = (
+    <div ref={stageRef} className="game-stage screen crt stage-portrait">
+      <canvas
+        ref={canvasRef}
+        width={W * SCALE}
+        height={H * SCALE}
+        className="block w-full"
+        style={{ aspectRatio: '7 / 10', height: 'auto' }}
+        {...canvasProps}
+      />
+      {paused && (
+        <div className="absolute inset-0 z-[4] bg-[#03020c]/80 flex flex-col items-center justify-center gap-6 fade-in">
+          <div className="pixel text-5xl neon-cyan">II</div>
+          <h3 className="pixel text-2xl neon-yellow">PAUSED</h3>
+          <Button onClick={togglePause}>▶ RESUME</Button>
+          <p className="pixel text-[0.55rem] muted blink">PRESS P TO CONTINUE</p>
+        </div>
+      )}
+    </div>
+  );
+
   return (
-    <section className="fade-in flex-1 flex flex-col items-center gap-3">
-      <GameHeader
+    <>
+      <ArcadeCabinet
         meta={meta}
         score={hud.score}
-        livesLabel={'♥'.repeat(Math.max(0, hud.lives))}
-        comboLabel={`x${hud.combo}`}
+        hiScore={hiScore}
+        status={{ label: 'LIVES', value: '♥'.repeat(Math.max(0, hud.lives)) }}
+        combo={`x${hud.combo}`}
         onExit={exit}
         onPause={togglePause}
+        onFullscreen={toggleFullscreen}
+        screen={screen}
+        pad={children}
+        controls={controls}
       />
-
-      <div ref={stageRef} className="game-stage relative" style={{ width: 'min(100%, calc(72vh * .7), 600px)' }}>
-        <canvas
-          ref={canvasRef}
-          width={W * SCALE}
-          height={H * SCALE}
-          className="rounded-2xl border-[3px] border-[#0a0f2c] w-full"
-          style={{ aspectRatio: '7 / 10', height: 'auto', boxShadow: '6px 6px 0 #0a0f2c' }}
-          {...canvasProps}
-        />
-        <Button variant="secondary" className="absolute top-2 right-2 px-2 py-0.5 text-xs opacity-80" aria-label="Fullscreen" onClick={toggleFullscreen}>
-          ⛶
-        </Button>
-        {paused && (
-          <div className="absolute inset-0 rounded-2xl bg-[#0a0f2c]/80 flex flex-col items-center justify-center gap-4 fade-in">
-            <DotText className="text-6xl text-white">II</DotText>
-            <DotText as="h3" className="text-3xl text-white">PAUSED</DotText>
-            <Button onClick={togglePause}>RESUME</Button>
-          </div>
-        )}
-      </div>
-
-      {children}
-      <p className="text-xs text-white/90 text-center max-w-md">{controls}</p>
 
       {result && (
         <ResultModal
@@ -123,6 +125,6 @@ export function ActionGameShell<S extends BaseState>({
           onHome={() => navigate('/dashboard')}
         />
       )}
-    </section>
+    </>
   );
 }

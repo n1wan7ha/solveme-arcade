@@ -8,8 +8,6 @@ import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiErrorMessage } from '../api/http';
 import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
-import { DotText } from '../ui/DotText';
 import { useAuthStore } from '../store/authStore';
 
 type Mode = 'login' | 'register';
@@ -39,73 +37,87 @@ export function AuthForm({ mode }: { mode: Mode }) {
   }
 
   return (
-    <section className="flex-1 flex items-center justify-center fade-in">
-      <Card className="w-full max-w-sm p-6 sm:p-8">
-        <div className="flex gap-1 justify-center mb-4" aria-hidden>
+    <section className="flex-1 flex flex-col items-center justify-center gap-6 fade-in py-6">
+      <div className="text-center select-none">
+        <div className="flex gap-1.5 justify-center mb-5" aria-hidden>
           {LOADER_SQUARES.map((delay, i) => (
             <i
               key={delay}
               className="sq"
               style={{
                 animationDelay: `${delay}s`,
-                background: i === LOADER_SQUARES.length - 1 ? 'var(--r)' : undefined,
+                background: i === LOADER_SQUARES.length - 1 ? 'var(--pink)' : undefined,
+                boxShadow: i === LOADER_SQUARES.length - 1 ? '0 0 10px var(--pink)' : undefined,
               }}
             />
           ))}
         </div>
-        <DotText as="h2" className="text-3xl text-center">
-          {mode === 'login' ? 'WELCOME BACK' : 'NEW PILOT'}
-        </DotText>
-        <p className="text-sm text-center opacity-70 mb-5">
-          Log in or create an account to play.
-        </p>
+        <h1 className="pixel text-3xl sm:text-5xl leading-tight">
+          <span className="neon-cyan">SOLVE</span>
+          <span className="neon-pink">ME</span>
+        </h1>
+        <p className="pixel text-xs sm:text-sm neon-yellow mt-3 tracking-[0.4em]">ARCADE</p>
+        <p className="pixel text-[0.6rem] sm:text-xs neon-pink mt-6 blink">INSERT COIN</p>
+      </div>
 
-        <div className="flex gap-2 mb-4">
-          <Link to="/" className={`lbt flex-1 ${mode === 'login' ? 'on' : ''}`}>
-            LOG IN
-          </Link>
-          <Link to="/register" className={`lbt flex-1 ${mode === 'register' ? 'on' : ''}`}>
-            REGISTER
-          </Link>
+      <div className="cabinet t-r w-full max-w-sm">
+        <div className="marquee text-center">
+          <h2 className="pixel text-xs sm:text-sm neon-yellow">
+            {mode === 'login' ? 'PLAYER LOGIN' : 'NEW PLAYER'}
+          </h2>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <label className="lab" htmlFor="username">Pilot name</label>
-          <input
-            id="username"
-            className="inp mb-3"
-            autoComplete="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-          <label className="lab" htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            className="inp"
-            autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          {mode === 'register' && (
-            <p className="text-xs opacity-70 mt-1">
-              3–20 letters, numbers or _ · password 8+ characters
-            </p>
-          )}
-          <div className="tx-r text-sm font-bold text-center min-h-6 mt-1" role="alert">
-            {error}
+        <div className="pt-4 px-2 pb-2">
+          <div className="flex gap-2 mb-4">
+            <Link to="/" className={`lbt flex-1 pixel text-[0.6rem] ${mode === 'login' ? 'on' : ''}`}>
+              LOG IN
+            </Link>
+            <Link to="/register" className={`lbt flex-1 pixel text-[0.6rem] ${mode === 'register' ? 'on' : ''}`}>
+              REGISTER
+            </Link>
           </div>
-          <Button type="submit" className="w-full" disabled={busy}>
-            {busy ? 'PLEASE WAIT…' : mode === 'login' ? 'LOG IN' : 'CREATE ACCOUNT'}
-          </Button>
-        </form>
 
-        <p className="text-center text-xs opacity-70 mt-4">
-          Demo accounts: <b>niwantha</b>, <b>user</b>, <b>player</b> · Password: <b>1234</b>
-        </p>
-      </Card>
+          <form onSubmit={handleSubmit}>
+            <label className="lab" htmlFor="username">Player name</label>
+            <input
+              id="username"
+              className="inp mb-3 font-bold"
+              autoComplete="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+            <label className="lab" htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              className="inp"
+              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            {mode === 'register' && (
+              <p className="text-xs muted mt-1.5">
+                3–20 letters, numbers or _ · password 8+ characters
+              </p>
+            )}
+            <div className="neon-pink text-sm font-bold text-center min-h-6 mt-2" role="alert">
+              {error}
+            </div>
+            <Button type="submit" className="w-full mt-1 glow" disabled={busy}>
+              {busy ? 'PLEASE WAIT…' : mode === 'login' ? '▶ PRESS START' : '▶ CREATE PLAYER'}
+            </Button>
+          </form>
+
+          <p className="text-center text-xs muted mt-4">
+            Demo accounts: <b className="text-[var(--text)]">niwantha</b>, <b className="text-[var(--text)]">user</b>,{' '}
+            <b className="text-[var(--text)]">player</b> · Password: <b className="text-[var(--text)]">1234</b>
+          </p>
+        </div>
+      </div>
+
+      <p className="pixel text-[0.5rem] muted">© SOLVEME ARCADE · 1 CREDIT = 1 PLAY</p>
     </section>
   );
 }

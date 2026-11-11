@@ -8,7 +8,6 @@ import type { Run } from '../api/games.api';
 import { findGame } from '../games/registry';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
-import { DotText } from '../ui/DotText';
 import { greeting, TIPS, XP_SEGMENTS } from './stats';
 import type { Summary } from './stats';
 
@@ -27,41 +26,46 @@ export function WelcomeCard({ username, summary, lastRun, onStart, onPlay }: Wel
   const lastGame = findGame(lastRun?.gameId);
 
   return (
-    <Card className="p-4 sm:p-6">
-      <div className="flex flex-wrap items-center gap-4 justify-between">
-        <div className="flex items-center gap-3 min-w-0">
-          <DotText className="w-14 h-14 shrink-0 bg-b bd rounded-xl flex items-center justify-center text-3xl">
+    <Card className="p-4 sm:p-6 overflow-hidden">
+      <div className="pointer-events-none absolute -right-10 -top-16 w-64 h-64 rounded-full bg-[#ff2e88] opacity-20 blur-3xl" aria-hidden />
+      <div className="relative flex flex-wrap items-center gap-4 justify-between">
+        <div className="flex items-center gap-4 min-w-0">
+          <div className="w-16 h-16 shrink-0 rounded-xl bd bg-[#05030f] grid place-items-center pixel text-2xl neon-cyan shadow-[0_0_20px_#27e8ff44]">
             {username[0].toUpperCase()}
-          </DotText>
+          </div>
           <div className="min-w-0">
-            <DotText as="h2" className="text-xl sm:text-3xl leading-tight break-words">
-              {hello}, {username.toUpperCase()}
-            </DotText>
-            <p className="text-sm opacity-70">{tip}</p>
+            <p className="pixel text-[0.55rem] neon-yellow blink mb-2">PLAYER 1 READY</p>
+            <h2 className="pixel text-sm sm:text-xl leading-snug break-words">
+              {hello}, <span className="neon-pink">{username.toUpperCase()}</span>
+            </h2>
+            <p className="text-sm muted mt-1">
+              <span className="pixel text-[0.5rem] neon-cyan mr-2">TIP</span>
+              {tip}
+            </p>
           </div>
         </div>
         <div className="flex gap-3 flex-wrap">
           {lastGame && (
             <Button variant="secondary" onClick={() => onPlay(lastGame.slug)}>
-              ↻ {lastGame.name}
+              ↻ {lastGame.name.toUpperCase()}
             </Button>
           )}
-          <Button className="glow text-lg" onClick={onStart}>▶ START</Button>
+          <Button className="glow text-sm px-6" onClick={onStart}>▶ START</Button>
         </div>
       </div>
 
-      <div className="mt-4">
-        <div className="flex justify-between text-xs font-bold mb-1">
-          <DotText className="text-base">LEVEL {summary.level}</DotText>
-          <span>
+      <div className="relative mt-5">
+        <div className="flex justify-between items-end mb-2 gap-2">
+          <span className="pixel text-xs neon-yellow">LV {summary.level}</span>
+          <span className="text-xs muted">
             {summary.xpIntoLevel} / {summary.xpForLevel} XP to level {summary.level + 1}
           </span>
         </div>
-        <div className="flex gap-[3px]">
+        <div className="grid gap-[3px]" style={{ gridTemplateColumns: `repeat(${XP_SEGMENTS}, 1fr)` }}>
           {Array.from({ length: XP_SEGMENTS }, (_, i) => (
             <i
               key={i}
-              className={`flex-1 h-4 bd rounded-sm ${i < summary.filledSegments ? 'bg-r' : 'bg-white'}`}
+              className={`seg ${i < summary.filledSegments ? 'on' : ''}`}
               style={{ animation: `fi .3s both ${i * 35}ms` }}
             />
           ))}

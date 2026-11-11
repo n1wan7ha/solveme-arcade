@@ -7,7 +7,6 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import type { PointerEvent } from 'react';
-import { Button } from '../../ui/Button';
 import { ActionGameShell } from '../shared/ActionGameShell';
 import { toGamePoint } from '../shared/pointer';
 import type { GameProps } from '../shared/props';
@@ -72,17 +71,18 @@ export function SnakeGame(props: GameProps) {
         onPointerUp: () => { swipeStart.current = null; },
       }}
     >
-      <div className="grid grid-cols-3 gap-2 w-44 select-none">
+      <div className="grid grid-cols-3 gap-2 w-[172px] select-none">
         {DPAD.map(({ label, dir, area }) => (
-          <Button
+          <button
             key={label}
-            variant="secondary"
-            className={`py-3 ${area}`}
+            type="button"
+            className={`arcade-btn justify-self-center ${area}`}
+            style={{ ['--btn' as string]: dir[1] ? 'var(--pink)' : 'var(--cyan)' }}
             aria-label={`Turn ${label}`}
             onPointerDown={(e) => { e.preventDefault(); engine.turn(...dir); }}
           >
             {label}
-          </Button>
+          </button>
         ))}
       </div>
     </ActionGameShell>

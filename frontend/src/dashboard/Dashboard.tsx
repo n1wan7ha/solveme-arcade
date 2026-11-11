@@ -24,7 +24,7 @@ export function Dashboard() {
   const [pickerOpen, setPickerOpen] = useState(false);
 
   if (!user || !runs) {
-    return <DotText className="text-2xl text-white animate-pulse m-auto">LOADING…</DotText>;
+    return <DotText className="pixel text-sm neon-cyan blink m-auto">LOADING…</DotText>;
   }
 
   const summary = summarise(runs);
@@ -40,14 +40,12 @@ export function Dashboard() {
         onPlay={play}
       />
       <StatsGrid summary={summary} />
+      <GameLibrary runs={runs} onPlay={play} />
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
-        <GameLibrary runs={runs} onPlay={play} className="lg:col-span-7" />
+        <Leaderboard username={user.username} className="lg:col-span-7" />
         <RunHistory runs={runs} className="lg:col-span-5" />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
-        <Achievements runs={runs} className="lg:col-span-5" />
-        <Leaderboard username={user.username} className="lg:col-span-7" />
-      </div>
+      <Achievements runs={runs} />
       <GamePicker open={pickerOpen} onClose={() => setPickerOpen(false)} onPlay={play} />
     </section>
   );

@@ -7,10 +7,10 @@ import type { Summary } from './stats';
 
 export function StatsGrid({ summary }: { summary: Summary }) {
   const tiles = [
-    { label: 'TOTAL SCORE', value: summary.totalScore, suffix: '', color: 't-b', hint: 'All points. They fill your XP bar.' },
-    { label: 'RUNS', value: summary.runCount, suffix: '', color: 't-w', hint: 'Finished rounds.' },
-    { label: 'ACCURACY', value: summary.accuracy, suffix: '%', color: 't-r', hint: 'Hits vs. attempts.' },
-    { label: 'BEST RUN', value: summary.bestRun, suffix: '', color: 't-w', hint: 'Highest single score.' },
+    { label: 'TOTAL SCORE', value: summary.totalScore, suffix: '', color: 'neon-cyan', hint: 'All points. They fill your XP bar.' },
+    { label: 'RUNS', value: summary.runCount, suffix: '', color: 'neon-yellow', hint: 'Finished rounds.' },
+    { label: 'ACCURACY', value: summary.accuracy, suffix: '%', color: 'neon-pink', hint: 'Hits vs. attempts.' },
+    { label: 'BEST RUN', value: summary.bestRun, suffix: '', color: 'neon-green', hint: 'Highest single score.' },
   ];
 
   return (
@@ -19,12 +19,14 @@ export function StatsGrid({ summary }: { summary: Summary }) {
         <div
           key={tile.label}
           title={tile.hint}
-          className={`tile ${tile.color} p-3 sm:p-4`}
+          className="card p-3 sm:p-4"
           style={{ animation: `fi .5s both ${i * 80}ms` }}
         >
-          <div className="text-[10px] sm:text-xs font-bold tracking-widest opacity-80">{tile.label}</div>
-          <div className="dot text-3xl sm:text-4xl">
-            <CountUp to={tile.value} suffix={tile.suffix} />
+          <div className="pixel text-[0.5rem] sm:text-[0.55rem] muted">{tile.label}</div>
+          <div className="hud mt-2 py-2 text-right">
+            <span className={`pixel text-lg sm:text-2xl tabular-nums ${tile.color}`}>
+              <CountUp to={tile.value} suffix={tile.suffix} />
+            </span>
           </div>
         </div>
       ))}

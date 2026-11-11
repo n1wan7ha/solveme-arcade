@@ -11,9 +11,8 @@ import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fishApi } from '../../api/fish.api';
 import { Button } from '../../ui/Button';
-import { Card } from '../../ui/Card';
+import { ArcadeCabinet } from '../shared/ArcadeCabinet';
 import { play } from '../shared/audio';
-import { GameHeader } from '../shared/GameHeader';
 import type { GameProps } from '../shared/props';
 import { ResultModal } from '../shared/ResultModal';
 import type { RunStats } from '../shared/types';
@@ -22,6 +21,16 @@ import { PuzzleEngine } from './engine';
 import type { AnswerOutcome, PuzzleRules } from './engine';
 
 type LoadStatus = 'loading' | 'ready' | 'error';
+
+const PROGRESS_SEGMENTS = 20;
+
+/** What the HUD calls the puzzle's status box. */
+function statusTitle(rules: PuzzleRules): string {
+  if (rules.lives) return 'LIVES';
+  if (rules.timeLimit) return 'TIME';
+  if (rules.rounds) return 'ROUND';
+  return 'SOLVED';
+}
 
 export function PuzzleGame({ meta, onPlayAgain, rules }: GameProps & { rules: PuzzleRules }) {
   const navigate = useNavigate();
@@ -105,71 +114,98 @@ export function PuzzleGame({ meta, onPlayAgain, rules }: GameProps & { rules: Pu
     navigate('/dashboard');
   }
 
-  const boxAnimation = feedback?.outcome === 'correct' ? 'pop' : feedback ? 'shake' : '';
+  const hiScore = Math.max(0, ...recorder.history.filter((r) => r.gameId === meta.slug).map((r) => r.score));
+  const litSegments = Math.round(engine.progress() * PROGRESS_SEGMENTS);
+  const lowTime = rules.timeLimit !== undefined && engine.state.timeLeft <= 10;
 
-  return (
-    <section className="fade-in flex-1 flex flex-col items-center gap-3">
-      <GameHeader
-        meta={meta}
-        score={engine.state.score}
-        livesLabel={engine.statusLabel()}
-        comboLabel={engine.comboLabel()}
-        onExit={exit}
-      />
-
-      <Card className="w-full max-w-4xl p-4 sm:p-5 grid md:grid-cols-3 gap-5">
-        <div className="md:col-span-2">
+  const screen = (
+    <div className="screen crt stage-wide">
+      <div
+        key={feedback?.id}
+        className={`relative min-h-[260px] sm:min-h-[340px] lg:min-h-[420px] bg-[#f4f7ff] flex items-center justify-center overflow-hidden ${
+          feedback?.outcome === 'wrong' ? 'shake' : ''
+        }`}
+      >
+        {status === 'ready' ? (
+          <img key={imageSrc} src={imageSrc} alt="Puzzle" className="max-h-[56vh] max-w-full fade-in" />
+        ) : (
+          <span className={`pixel text-xs text-[#1c1543] text-center px-4 ${status === 'loading' ? 'blink' : ''}`}>
+            {status === 'loading' ? 'LOADING PUZZLE…' : 'PUZZLE SERVICE OFFLINE · PRESS SKIP TO RETRY'}
+          </span>
+        )}
+        {feedback && (
           <div
-            key={feedback?.id}
-            className={`min-h-[260px] rounded-xl bd bg-[#eef2ff] flex items-center justify-center overflow-hidden ${boxAnimation}`}
+            className={`absolute inset-x-0 top-4 z-[4] text-center pixel text-lg sm:text-2xl fade-in ${
+              feedback.outcome === 'correct' ? 'neon-green' : 'neon-pink'
+            }`}
           >
-            {status === 'ready' ? (
-              <img key={imageSrc} src={imageSrc} alt="Puzzle" className="max-h-[380px] max-w-full fade-in" />
-            ) : (
-              <span className={`opacity-60 ${status === 'loading' ? 'animate-pulse' : ''}`}>
-                {status === 'loading' ? 'Decrypting puzzle…' : 'Puzzle service unreachable. Press Skip to retry.'}
-              </span>
-            )}
+            {feedback.outcome === 'correct' ? 'CORRECT!' : 'MISS!'}
           </div>
-          <p className="text-center font-bold mt-3">{rules.question}</p>
-          <div className="h-3 mt-3 rounded bd bg-white overflow-hidden">
-            <i className="block h-full bg-r transition-all" style={{ width: `${engine.progress() * 100}%` }} />
-          </div>
+        )}
+      </div>
+      <div className="bg-[#05030f] px-3 py-2 flex items-center gap-3">
+        <span className="pixel text-[0.55rem] muted shrink-0">{statusTitle(rules)}</span>
+        <div className="flex-1 grid gap-[3px]" style={{ gridTemplateColumns: `repeat(${PROGRESS_SEGMENTS}, 1fr)` }}>
+          {Array.from({ length: PROGRESS_SEGMENTS }, (_, i) => (
+            <i
+              key={i}
+              className={`seg ${i < litSegments ? 'on' : ''}`}
+              style={{ ['--seg' as string]: lowTime ? 'var(--pink)' : 'var(--green)' }}
+            />
+          ))}
         </div>
+      </div>
+    </div>
+  );
 
-        <form className="flex flex-col gap-3 justify-center" onSubmit={submit}>
-          <label className="lab" htmlFor="answer">Your answer</label>
+  const deck = (
+    <form className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end" onSubmit={submit}>
+      <div>
+        <label className="lab" htmlFor="answer">{rules.question}</label>
+        <div className="flex gap-2">
           <input
             id="answer"
             ref={answerInput}
             type="number"
             inputMode="numeric"
-            className="inp dot text-3xl text-center"
+            placeholder="?"
+            className="inp pixel text-xl text-center"
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             autoFocus
           />
-          <Button type="submit">CHECK</Button>
-          <div className="grid grid-cols-2 gap-3">
-            {rules.hintCost ? (
-              <Button variant="secondary" onClick={() => { setHint(engine.takeHint() ?? ''); refresh(); }}>
-                💡 Hint (-{rules.hintCost})
-              </Button>
-            ) : (
-              <span />
-            )}
-            <Button variant="secondary" onClick={() => { setFeedback(null); nextPuzzle(); }}>⏭ Skip</Button>
-          </div>
-          <div className={`min-h-[2rem] text-center font-bold ${feedback?.outcome === 'correct' ? 'text-emerald-500' : 'text-red-500'}`}>
-            {feedback && (feedback.outcome === 'correct' ? 'Correct! 🎉' : 'Not quite. Try again!')}
-          </div>
-          <div className="text-xs tx-b text-center font-bold">{hint}</div>
-        </form>
-      </Card>
+          <Button type="submit" className="shrink-0 glow">CHECK ▶</Button>
+        </div>
+      </div>
+      <div className="flex gap-2 justify-end">
+        {rules.hintCost ? (
+          <Button variant="secondary" onClick={() => { setHint(engine.takeHint() ?? ''); refresh(); }}>
+            💡 HINT -{rules.hintCost}
+          </Button>
+        ) : null}
+        <Button variant="secondary" onClick={() => { setFeedback(null); nextPuzzle(); }}>⏭ SKIP</Button>
+      </div>
+      {hint && <p className="md:col-span-2 text-sm neon-cyan text-center">{hint}</p>}
+    </form>
+  );
+
+  return (
+    <>
+      <ArcadeCabinet
+        meta={meta}
+        score={engine.state.score}
+        hiScore={hiScore}
+        status={{ label: statusTitle(rules), value: engine.statusLabel() }}
+        combo={engine.comboLabel()}
+        onExit={exit}
+        screen={screen}
+        deck={deck}
+        controls="Read the picture, type the number and press Enter. Skip loads a new puzzle."
+      />
 
       {result && (
         <ResultModal meta={meta} stats={result} recorder={recorder} onPlayAgain={onPlayAgain} onHome={() => navigate('/dashboard')} />
       )}
-    </section>
+    </>
   );
 }

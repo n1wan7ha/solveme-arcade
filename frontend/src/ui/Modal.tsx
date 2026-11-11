@@ -6,7 +6,6 @@
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { Button } from './Button';
-import { DotText } from './DotText';
 
 interface ModalProps {
   open: boolean;
@@ -27,19 +26,19 @@ export function Modal({ open, title, onClose, children }: ModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-[#0a0f2c]/70 flex items-center justify-center p-3 fade-in"
+      className="fixed inset-0 z-50 bg-[#03020c]/80 backdrop-blur-sm flex items-center justify-center p-3 fade-in"
       onClick={onClose}
     >
       <div
-        className="card w-full max-w-2xl max-h-[92vh] overflow-y-auto"
+        className="card w-full max-w-3xl max-h-[92vh] overflow-y-auto"
         role="dialog"
         aria-modal="true"
         aria-label={title}
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-4 border-b-[3px] border-[#0a0f2c]">
-          <DotText as="h2" className="text-2xl">{title}</DotText>
-          <Button variant="secondary" className="px-3 py-1" onClick={onClose} aria-label="Close">
+        <div className="flex justify-between items-center p-4 border-b-2 border-[var(--line)]">
+          <h2 className="pixel text-base sm:text-lg neon-yellow">{title}</h2>
+          <Button variant="secondary" className="px-3 py-1.5" onClick={onClose} aria-label="Close">
             ✕
           </Button>
         </div>

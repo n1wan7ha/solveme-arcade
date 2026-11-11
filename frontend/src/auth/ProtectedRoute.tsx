@@ -10,7 +10,7 @@ import { useAuthStore } from '../store/authStore';
 function Loading() {
   return (
     <div className="flex-1 flex items-center justify-center">
-      <DotText className="text-2xl text-white animate-pulse">LOADING…</DotText>
+      <DotText className="pixel text-sm neon-cyan blink">LOADING…</DotText>
     </div>
   );
 }

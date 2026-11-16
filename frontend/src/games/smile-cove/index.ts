@@ -8,7 +8,7 @@ import { SmileCoveGame } from './SmileCoveGame';
 export const smileCove: GameEntry = {
   slug: 'smile-cove',
   name: 'Smile Cove',
-  emoji: '😀',
+  icon: 'smile',
   category: 'smile',
   type: 'puzzle',
   color: 't-r',

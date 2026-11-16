@@ -102,7 +102,7 @@ export class PuzzleEngine {
     if (rules.lives) return '♥'.repeat(Math.max(0, s.lives));
     if (rules.timeLimit) return `${Math.max(0, s.timeLeft)}s`;
     if (rules.rounds) return `${s.attempts}/${rules.rounds}`;
-    return `${s.correct} ✓`;
+    return String(s.correct);
   }
 
   /** How full the progress bar is, 0 to 1. */

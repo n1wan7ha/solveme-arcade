@@ -8,6 +8,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   UseGuards,
   UsePipes,
@@ -18,6 +19,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import type { AuthUser } from '../auth/interfaces/auth-user.interface.js';
 import { CreateRunDto } from './dto/create-run.dto.js';
+import { UpdateInitialsDto } from './dto/update-initials.dto.js';
 import { RunsService } from './runs.service.js';
 
 @Controller()
@@ -38,5 +40,13 @@ export class RunsController {
   @Get('me/runs')
   listMyRuns(@CurrentUser() user: AuthUser): Promise<Run[]> {
     return this.runsService.listUserRuns(user.id);
+  }
+
+  @Patch('me/initials')
+  setInitials(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: UpdateInitialsDto,
+  ): Promise<{ initials: string }> {
+    return this.runsService.setInitials(user.id, dto.initials);
   }
 }

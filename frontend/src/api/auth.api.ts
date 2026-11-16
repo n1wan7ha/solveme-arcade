@@ -8,6 +8,7 @@ export interface User {
   id: string;
   username: string;
   role: 'PLAYER' | 'ADMIN';
+  initials?: string | null; // three-letter high-score tag
 }
 
 export interface Credentials {

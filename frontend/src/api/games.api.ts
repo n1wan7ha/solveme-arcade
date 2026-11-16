@@ -22,6 +22,7 @@ export type NewRun = Pick<Run, 'score' | 'attempts' | 'correct' | 'maxCombo' | '
 export interface LeaderboardEntry {
   rank: number;
   username: string;
+  initials: string | null;
   score: number;
 }
 
@@ -31,6 +32,9 @@ export type LeaderboardScope = string | 'all';
 export const gamesApi = {
   createRun: (gameId: string, run: NewRun) =>
     http.post<Run>(`/games/${gameId}/runs`, run).then((res) => res.data),
+
+  setInitials: (initials: string) =>
+    http.patch<{ initials: string }>('/me/initials', { initials }).then((res) => res.data.initials),
 
   myRuns: () => http.get<Run[]>('/me/runs').then((res) => res.data),
 

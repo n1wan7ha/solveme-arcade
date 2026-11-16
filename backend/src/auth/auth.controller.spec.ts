@@ -90,7 +90,7 @@ describe('AuthModule (happy path)', () => {
       .post('/auth/register')
       .send({ username: 'tester', password: 'longenough1' })
       .expect(201);
-    expect(registered.body).toEqual({ id: 'user-1', username: 'tester', role: 'PLAYER' });
+    expect(registered.body).toEqual({ id: 'user-1', username: 'tester', role: 'PLAYER', initials: null });
     expect(registered.headers['set-cookie']).toEqual(
       expect.arrayContaining([
         expect.stringMatching(/^access_token=.+HttpOnly; SameSite=Strict/),

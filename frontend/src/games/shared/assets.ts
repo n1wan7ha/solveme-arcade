@@ -24,6 +24,3 @@ export const FRUIT_JUICE: Record<string, string> = {
 export const FRUITS = Object.keys(FRUIT_JUICE);
 export const GOLDEN_FRUIT = '🍍';
 export const BOMB = '💣';
-
-/** The emojis drifting up the page background. */
-export const BACKGROUND_EMOJIS = ['🐍', '🍉', '🚀', '🐟', '🍌', '🍅', '😀'];

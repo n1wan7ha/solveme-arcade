@@ -8,7 +8,7 @@ import { StarScraperGame } from './StarScraperGame';
 export const starScraper: GameEntry = {
   slug: 'star-scraper',
   name: 'Star Scraper',
-  emoji: '🚀',
+  icon: 'rocket',
   category: 'tomato',
   type: 'arcade',
   color: 't-w',

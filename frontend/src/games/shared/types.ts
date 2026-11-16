@@ -4,6 +4,7 @@
  * Drafted with an LLM (Claude Code).
  */
 import type { PuzzleCategory } from '../../api/fish.api';
+import type { IconName } from '../../ui/icons';
 
 export type GameType = 'puzzle' | 'slash' | 'snake' | 'arcade';
 
@@ -11,7 +12,7 @@ export type GameType = 'puzzle' | 'slash' | 'snake' | 'arcade';
 export interface GameMeta {
   slug: string;
   name: string;
-  emoji: string;
+  icon: IconName;
   category: PuzzleCategory;
   type: GameType;
   color: 't-b' | 't-r' | 't-w';

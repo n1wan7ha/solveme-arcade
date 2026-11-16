@@ -14,6 +14,8 @@ import type { Point } from '../shared/types';
 import { useAnswerQueue } from '../shared/useAnswerQueue';
 import { SnakeEngine } from './engine';
 import { drawSnake } from './renderer';
+import { PixelIcon } from '../../ui/PixelIcon';
+import type { IconName } from '../../ui/icons';
 
 const KEY_DIRECTIONS: Record<string, [number, number]> = {
   ArrowLeft: [-1, 0], a: [-1, 0],
@@ -22,11 +24,11 @@ const KEY_DIRECTIONS: Record<string, [number, number]> = {
   ArrowDown: [0, 1], s: [0, 1],
 };
 const SWIPE_DISTANCE = 22; // game units before a drag counts as a swipe
-const DPAD: { label: string; dir: [number, number]; area: string }[] = [
-  { label: '▲', dir: [0, -1], area: 'col-start-2' },
-  { label: '◀', dir: [-1, 0], area: 'col-start-1' },
-  { label: '▼', dir: [0, 1], area: '' },
-  { label: '▶', dir: [1, 0], area: '' },
+const DPAD: { label: string; icon: IconName; dir: [number, number]; area: string }[] = [
+  { label: 'up', icon: 'up', dir: [0, -1], area: 'col-start-2' },
+  { label: 'left', icon: 'left', dir: [-1, 0], area: 'col-start-1' },
+  { label: 'down', icon: 'down', dir: [0, 1], area: '' },
+  { label: 'right', icon: 'play', dir: [1, 0], area: '' },
 ];
 
 export function SnakeGame(props: GameProps) {
@@ -72,16 +74,16 @@ export function SnakeGame(props: GameProps) {
       }}
     >
       <div className="grid grid-cols-3 gap-2 w-[172px] select-none">
-        {DPAD.map(({ label, dir, area }) => (
+        {DPAD.map(({ label, icon, dir, area }) => (
           <button
             key={label}
             type="button"
             className={`arcade-btn justify-self-center ${area}`}
-            style={{ ['--btn' as string]: dir[1] ? 'var(--pink)' : 'var(--cyan)' }}
+            style={{ ['--btn' as string]: dir[1] ? 'var(--red)' : 'var(--blue)' }}
             aria-label={`Turn ${label}`}
             onPointerDown={(e) => { e.preventDefault(); engine.turn(...dir); }}
           >
-            {label}
+            <PixelIcon name={icon} size={22} />
           </button>
         ))}
       </div>

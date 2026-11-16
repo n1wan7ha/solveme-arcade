@@ -9,10 +9,10 @@ import { FruitSlashGame } from './FruitSlashGame';
 export const fruitSlash: GameEntry = {
   slug: 'fruit-ninja',
   name: 'Fruit Slash',
-  emoji: '🍉',
+  icon: 'melon',
   category: 'smile',
   type: 'slash',
   color: 't-r',
-  how: 'Swipe to slice. Easy start, gets faster. Avoid 💣. Golden 🍍 = 5x.',
+  how: 'Swipe to slice. Easy start, gets faster. Avoid bombs. The golden pineapple is worth 5x.',
   Component: FruitSlashGame,
 };

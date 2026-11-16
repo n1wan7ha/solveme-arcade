@@ -7,6 +7,7 @@
 import type { Run } from '../api/games.api';
 import { GAMES } from '../games/registry';
 import { levelOf, levelStart } from '../games/shared/level';
+import type { IconName } from '../ui/icons';
 
 export const XP_SEGMENTS = 20;
 
@@ -42,7 +43,7 @@ export function summarise(runs: Run[]): Summary {
 }
 
 export interface Achievement {
-  emoji: string;
+  icon: IconName;
   title: string;
   description: string;
   unlocked: boolean;
@@ -55,12 +56,12 @@ export function achievements(runs: Run[]): Achievement[] {
   const gamesPlayed = new Set(runs.map((run) => run.gameId)).size;
 
   return [
-    { emoji: '🏁', title: 'First run', description: 'Finish any run', unlocked: runCount >= 1 },
-    { emoji: '💯', title: 'Century', description: 'Score 100+ in one run', unlocked: bestRun >= 100 },
-    { emoji: '🔥', title: 'Combo x5', description: 'Reach a x5 combo', unlocked: runs.some((run) => run.maxCombo >= 5) },
-    { emoji: '🎮', title: 'Collector', description: `Play all ${GAMES.length} games`, unlocked: gamesPlayed >= GAMES.length },
-    { emoji: '🎯', title: 'Sharpshooter', description: '90%+ over 10 tries', unlocked: attempts >= 10 && correct / attempts >= 0.9 },
-    { emoji: '🏆', title: 'Grinder', description: 'Finish 10 runs', unlocked: runCount >= 10 },
+    { icon: 'flag', title: 'First run', description: 'Finish any run', unlocked: runCount >= 1 },
+    { icon: 'star', title: 'Century', description: 'Score 100+ in one run', unlocked: bestRun >= 100 },
+    { icon: 'flame', title: 'Combo x5', description: 'Reach a x5 combo', unlocked: runs.some((run) => run.maxCombo >= 5) },
+    { icon: 'gamepad', title: 'Collector', description: `Play all ${GAMES.length} games`, unlocked: gamesPlayed >= GAMES.length },
+    { icon: 'target', title: 'Sharpshooter', description: '90%+ over 10 tries', unlocked: attempts >= 10 && correct / attempts >= 0.9 },
+    { icon: 'trophy', title: 'Grinder', description: 'Finish 10 runs', unlocked: runCount >= 10 },
   ];
 }
 
@@ -72,7 +73,7 @@ export function greeting(hour: number): string {
 
 export const TIPS = [
   'Snake: chain food within 5 seconds for a x5 combo.',
-  'Fruit Slash: the golden 🍍 is worth 5x.',
+  'Fruit Slash: the golden pineapple is worth 5x.',
   'Star Scraper: stay calm, the speed rises slowly.',
   'Smile Cove: a hint costs 3 points.',
   'Press P to pause any action game.',

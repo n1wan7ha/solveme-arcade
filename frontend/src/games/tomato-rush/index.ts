@@ -8,7 +8,7 @@ import { TomatoRushGame } from './TomatoRushGame';
 export const tomatoRush: GameEntry = {
   slug: 'tomato-rush',
   name: 'Tomato Rush',
-  emoji: '🍅',
+  icon: 'tomato',
   category: 'tomato',
   type: 'puzzle',
   color: 't-w',

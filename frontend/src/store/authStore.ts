@@ -17,6 +17,7 @@ interface AuthState {
   register: (credentials: Credentials) => Promise<void>;
   logout: () => Promise<void>;
   clear: () => void;
+  setInitials: (initials: string) => void;
 }
 
 export const useAuthStore = create<AuthState>()((set) => ({
@@ -49,4 +50,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
   },
 
   clear: () => set({ user: null, status: 'anonymous' }),
+
+  // After PATCH /me/initials succeeds, so the next high score starts from them.
+  setInitials: (initials) => set((state) => ({ user: state.user && { ...state.user, initials } })),
 }));

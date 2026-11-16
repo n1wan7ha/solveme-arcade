@@ -111,18 +111,30 @@ export class RunsService {
     }));
   }
 
+  /** Signs the high-score table; cached boards must be rebuilt to show it. */
+  async setInitials(userId: string, initials: string): Promise<{ initials: string }> {
+    await this.prisma.user.update({ where: { id: userId }, data: { initials } });
+    const games = await this.prisma.game.findMany({ select: { id: true } });
+    await this.cache.delete(
+      this.leaderboardKey(ALL_GAMES),
+      ...games.map((game) => this.leaderboardKey(game.id)),
+    );
+    return { initials };
+  }
+
   private async withUsernames(
     rows: { userId: string; score: number }[],
   ): Promise<LeaderboardEntry[]> {
     const users = await this.prisma.user.findMany({
       where: { id: { in: rows.map((row) => row.userId) } },
-      select: { id: true, username: true },
+      select: { id: true, username: true, initials: true },
     });
-    const usernameById = new Map(users.map((u) => [u.id, u.username]));
+    const userById = new Map(users.map((u) => [u.id, u]));
 
     return rows.map((row, index) => ({
       rank: index + 1,
-      username: usernameById.get(row.userId) ?? 'unknown',
+      username: userById.get(row.userId)?.username ?? 'unknown',
+      initials: userById.get(row.userId)?.initials ?? null,
       score: row.score,
     }));
   }

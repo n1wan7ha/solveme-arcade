@@ -52,15 +52,15 @@ describe('RunsService', () => {
       { userId: 'u1', _max: { score: 450 } },
     ]);
     prisma.user.findMany.mockResolvedValue([
-      { id: 'u1', username: 'player' },
-      { id: 'u2', username: 'niwantha' },
+      { id: 'u1', username: 'player', initials: null },
+      { id: 'u2', username: 'niwantha', initials: 'NIW' },
     ]);
 
     const board = await service.leaderboard('snake');
 
     expect(board).toEqual([
-      { rank: 1, username: 'niwantha', score: 900 },
-      { rank: 2, username: 'player', score: 450 },
+      { rank: 1, username: 'niwantha', initials: 'NIW', score: 900 },
+      { rank: 2, username: 'player', initials: null, score: 450 },
     ]);
     expect(cache.setJson).toHaveBeenCalledWith('leaderboard:snake', board, 30);
   });

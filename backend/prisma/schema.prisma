@@ -27,6 +27,7 @@ model User {
   username     String   @unique
   passwordHash String
   role         Role     @default(PLAYER)
+  initials     String?  @db.VarChar(3) // arcade tag shown on the high-score table
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

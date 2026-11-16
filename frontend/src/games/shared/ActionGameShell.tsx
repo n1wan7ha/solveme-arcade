@@ -18,6 +18,8 @@ import type { Hud, RunStats } from './types';
 import { useGameLoop } from './useGameLoop';
 import { useRunRecorder } from './useRunRecorder';
 import type { GameProps } from './props';
+import { PixelIcon } from '../../ui/PixelIcon';
+import { Hearts } from '../../ui/Hearts';
 
 interface ActionGameShellProps<S extends BaseState> extends GameProps {
   engine: BaseEngine<S>;
@@ -27,6 +29,9 @@ interface ActionGameShellProps<S extends BaseState> extends GameProps {
   controls: string;
   children?: ReactNode; // extra on-screen controls, e.g. Snake's D-pad
 }
+
+/** Beat speed: starts relaxed and climbs with the score. */
+const tempoFor = (score: number) => 112 + Math.min(88, Math.floor(score / 25) * 3);
 
 const sameHud = (a: Hud, b: Hud) => a.score === b.score && a.combo === b.combo && a.lives === b.lives;
 
@@ -80,7 +85,7 @@ export function ActionGameShell<S extends BaseState>({
   }
 
   const screen = (
-    <div ref={stageRef} className="game-stage screen crt stage-portrait">
+    <div ref={stageRef} className="game-stage screen power-on crt stage-portrait">
       <canvas
         ref={canvasRef}
         width={W * SCALE}
@@ -90,11 +95,12 @@ export function ActionGameShell<S extends BaseState>({
         {...canvasProps}
       />
       {paused && (
-        <div className="absolute inset-0 z-[4] bg-[#03020c]/80 flex flex-col items-center justify-center gap-6 fade-in">
-          <div className="pixel text-5xl neon-cyan">II</div>
-          <h3 className="pixel text-2xl neon-yellow">PAUSED</h3>
-          <Button onClick={togglePause}>▶ RESUME</Button>
-          <p className="pixel text-[0.55rem] muted blink">PRESS P TO CONTINUE</p>
+        <div className="absolute inset-0 z-[4] bg-[var(--blue)] flex flex-col items-center justify-center gap-6">
+          <div className="stripe w-full absolute top-0" />
+          <h3 className="print text-3xl">PAUSED</h3>
+          <Button onClick={togglePause}><PixelIcon name="play" className="mr-2" />RESUME</Button>
+          <p className="pixel text-[0.55rem] c-white blink">PRESS P / START TO CONTINUE</p>
+          <div className="stripe w-full absolute bottom-0" />
         </div>
       )}
     </div>
@@ -106,7 +112,7 @@ export function ActionGameShell<S extends BaseState>({
         meta={meta}
         score={hud.score}
         hiScore={hiScore}
-        status={{ label: 'LIVES', value: '♥'.repeat(Math.max(0, hud.lives)) }}
+        status={{ label: 'LIVES', value: <Hearts count={hud.lives} /> }}
         combo={`x${hud.combo}`}
         onExit={exit}
         onPause={togglePause}
@@ -114,6 +120,9 @@ export function ActionGameShell<S extends BaseState>({
         screen={screen}
         pad={children}
         controls={controls}
+        tempo={tempoFor(hud.score)}
+        running={!paused && !result}
+        portrait
       />
 
       {result && (

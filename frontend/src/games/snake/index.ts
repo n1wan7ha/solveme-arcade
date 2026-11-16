@@ -8,7 +8,7 @@ import { SnakeGame } from './SnakeGame';
 export const snake: GameEntry = {
   slug: 'snake',
   name: 'Snake',
-  emoji: '🐍',
+  icon: 'snake',
   category: 'banana',
   type: 'snake',
   color: 't-b',

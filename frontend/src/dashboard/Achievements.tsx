@@ -1,30 +1,45 @@
 /**
- * Why this exists: shows the six achievements, highlighting the unlocked ones.
- * The unlock rules live in stats.ts.
+ * Why this exists: shows the six achievements as arcade prize tickets; locked
+ * ones are pale. The unlock rules live in stats.ts.
  * Ported from the student's prototype; React version drafted with an LLM (Claude Code).
  */
 import type { Run } from '../api/games.api';
-import { Card } from '../ui/Card';
 import { achievements } from './stats';
+import { PixelIcon } from '../ui/PixelIcon';
 
 export function Achievements({ runs, className = '' }: { runs: Run[]; className?: string }) {
+  const list = achievements(runs);
+  const unlocked = list.filter((item) => item.unlocked).length;
+
   return (
-    <Card className={`p-4 sm:p-5 ${className}`}>
-      <h3 className="panel-title neon-green mb-4">ACHIEVEMENTS</h3>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        {achievements(runs).map((item, i) => (
+    <section className={className}>
+      <div className="flex items-end justify-between gap-3 mb-4">
+        <h3 className="panel-title">PRIZE TICKETS</h3>
+        <span className="pixel text-[0.5rem] c-white">{unlocked}/{list.length} WON</span>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {list.map((item, i) => (
           <div
             key={item.title}
             title={item.description}
-            className={`rounded-xl p-3 text-center border-2 ${item.unlocked ? 'border-[var(--yellow)] bg-[#ffd23f14] shadow-[0_0_18px_#ffd23f33]' : 'border-[var(--line)] bg-[#05030f] opacity-55 grayscale'}`}
-            style={{ animation: `fi .5s both ${i * 70}ms` }}
+            className={`ticket ${item.unlocked ? '' : 'locked'} flex items-stretch`}
+            style={{ animation: `fi .4s both ${i * 70}ms` }}
           >
-            <div className={`text-3xl ${item.unlocked ? 'float' : ''}`}>{item.emoji}</div>
-            <div className={`pixel text-[0.55rem] mt-2 ${item.unlocked ? 'neon-yellow' : ''}`}>{item.title.toUpperCase()}</div>
-            <div className="text-[11px] muted mt-1">{item.unlocked ? 'Unlocked!' : item.description}</div>
+            <div className="w-20 shrink-0 grid place-items-center border-r-[3px] border-dashed border-current">
+              <span className="bg-[var(--white)] border-[3px] border-[var(--ink)] p-1 grid">
+                <PixelIcon name={item.icon} size={32} className={item.unlocked ? '' : 'grayscale opacity-50'} />
+              </span>
+            </div>
+            <div className="px-4 py-3 min-w-0">
+              <div className="pixel text-[0.6rem]">{item.title.toUpperCase()}</div>
+              <div className="text-xs mt-1.5 font-bold">{item.unlocked ? 'WON!' : item.description}</div>
+            </div>
+            <div className="ml-auto pr-4 self-center pixel text-[0.5rem] opacity-80 hidden sm:block">
+              No.{String(i + 1).padStart(3, '0')}
+            </div>
           </div>
         ))}
       </div>
-    </Card>
+    </section>
   );
 }

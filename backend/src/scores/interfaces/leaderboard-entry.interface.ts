@@ -5,5 +5,6 @@
 export interface LeaderboardEntry {
   rank: number;
   username: string;
+  initials: string | null; // three-letter arcade tag, if the player set one
   score: number;
 }

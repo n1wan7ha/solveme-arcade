@@ -19,6 +19,8 @@ import type { RunStats } from '../shared/types';
 import { useRunRecorder } from '../shared/useRunRecorder';
 import { PuzzleEngine } from './engine';
 import type { AnswerOutcome, PuzzleRules } from './engine';
+import { PixelIcon } from '../../ui/PixelIcon';
+import { Hearts } from '../../ui/Hearts';
 
 type LoadStatus = 'loading' | 'ready' | 'error';
 
@@ -117,40 +119,44 @@ export function PuzzleGame({ meta, onPlayAgain, rules }: GameProps & { rules: Pu
   const hiScore = Math.max(0, ...recorder.history.filter((r) => r.gameId === meta.slug).map((r) => r.score));
   const litSegments = Math.round(engine.progress() * PROGRESS_SEGMENTS);
   const lowTime = rules.timeLimit !== undefined && engine.state.timeLeft <= 10;
+  // The beat speeds up with the streak, and races when the clock runs low.
+  const tempo = lowTime ? 190 : 104 + Math.min(engine.state.streak, 5) * 10;
 
   const screen = (
-    <div className="screen crt stage-wide">
+    <div className="screen power-on crt stage-wide">
       <div
         key={feedback?.id}
-        className={`relative min-h-[260px] sm:min-h-[340px] lg:min-h-[420px] bg-[#f4f7ff] flex items-center justify-center overflow-hidden ${
+        className={`relative min-h-[260px] sm:min-h-[340px] lg:min-h-[440px] bg-[var(--white)] flex items-center justify-center overflow-hidden ${
           feedback?.outcome === 'wrong' ? 'shake' : ''
         }`}
       >
         {status === 'ready' ? (
-          <img key={imageSrc} src={imageSrc} alt="Puzzle" className="max-h-[56vh] max-w-full fade-in" />
+          <img key={imageSrc} src={imageSrc} alt="Puzzle" className="max-h-[58vh] max-w-full fade-in" />
         ) : (
-          <span className={`pixel text-xs text-[#1c1543] text-center px-4 ${status === 'loading' ? 'blink' : ''}`}>
+          <span className={`pixel text-xs c-ink text-center px-4 ${status === 'loading' ? 'blink' : ''}`}>
             {status === 'loading' ? 'LOADING PUZZLE…' : 'PUZZLE SERVICE OFFLINE · PRESS SKIP TO RETRY'}
           </span>
         )}
         {feedback && (
-          <div
-            className={`absolute inset-x-0 top-4 z-[4] text-center pixel text-lg sm:text-2xl fade-in ${
-              feedback.outcome === 'correct' ? 'neon-green' : 'neon-pink'
-            }`}
-          >
-            {feedback.outcome === 'correct' ? 'CORRECT!' : 'MISS!'}
+          <div className="absolute inset-x-0 top-4 z-[4] flex justify-center">
+            <span
+              className={`pixel text-sm sm:text-xl c-white border-4 border-[var(--ink)] px-4 py-2 pop ${
+                feedback.outcome === 'correct' ? 'bg-[var(--blue)]' : 'bg-[var(--red)]'
+              }`}
+            >
+              {feedback.outcome === 'correct' ? 'CORRECT!' : 'MISS!'}
+            </span>
           </div>
         )}
       </div>
-      <div className="bg-[#05030f] px-3 py-2 flex items-center gap-3">
-        <span className="pixel text-[0.55rem] muted shrink-0">{statusTitle(rules)}</span>
+      <div className="bg-[var(--ink)] px-3 py-2 flex items-center gap-3">
+        <span className="pixel text-[0.5rem] c-white shrink-0">{statusTitle(rules)}</span>
         <div className="flex-1 grid gap-[3px]" style={{ gridTemplateColumns: `repeat(${PROGRESS_SEGMENTS}, 1fr)` }}>
           {Array.from({ length: PROGRESS_SEGMENTS }, (_, i) => (
             <i
               key={i}
               className={`seg ${i < litSegments ? 'on' : ''}`}
-              style={{ ['--seg' as string]: lowTime ? 'var(--pink)' : 'var(--green)' }}
+              style={{ ['--seg' as string]: lowTime ? 'var(--red)' : 'var(--blue)' }}
             />
           ))}
         </div>
@@ -161,7 +167,7 @@ export function PuzzleGame({ meta, onPlayAgain, rules }: GameProps & { rules: Pu
   const deck = (
     <form className="grid gap-3 md:grid-cols-[1fr_auto] md:items-end" onSubmit={submit}>
       <div>
-        <label className="lab" htmlFor="answer">{rules.question}</label>
+        <label className="lab c-white" htmlFor="answer">{rules.question.toUpperCase()}</label>
         <div className="flex gap-2">
           <input
             id="answer"
@@ -174,18 +180,18 @@ export function PuzzleGame({ meta, onPlayAgain, rules }: GameProps & { rules: Pu
             onChange={(e) => setAnswer(e.target.value)}
             autoFocus
           />
-          <Button type="submit" className="shrink-0 glow">CHECK ▶</Button>
+          <Button type="submit" variant="secondary" className="shrink-0">CHECK<PixelIcon name="play" className="ml-2" /></Button>
         </div>
       </div>
       <div className="flex gap-2 justify-end">
         {rules.hintCost ? (
           <Button variant="secondary" onClick={() => { setHint(engine.takeHint() ?? ''); refresh(); }}>
-            💡 HINT -{rules.hintCost}
+            <PixelIcon name="bulb" className="mr-2" />HINT -{rules.hintCost}
           </Button>
         ) : null}
-        <Button variant="secondary" onClick={() => { setFeedback(null); nextPuzzle(); }}>⏭ SKIP</Button>
+        <Button variant="secondary" onClick={() => { setFeedback(null); nextPuzzle(); }}><PixelIcon name="skip" className="mr-2" />SKIP</Button>
       </div>
-      {hint && <p className="md:col-span-2 text-sm neon-cyan text-center">{hint}</p>}
+      {hint && <p className="md:col-span-2 text-sm font-bold bg-[var(--white)] c-ink border-[3px] border-[var(--ink)] px-3 py-2 text-center">{hint}</p>}
     </form>
   );
 
@@ -195,12 +201,14 @@ export function PuzzleGame({ meta, onPlayAgain, rules }: GameProps & { rules: Pu
         meta={meta}
         score={engine.state.score}
         hiScore={hiScore}
-        status={{ label: statusTitle(rules), value: engine.statusLabel() }}
+        status={{ label: statusTitle(rules), value: rules.lives ? <Hearts count={engine.state.lives} /> : engine.statusLabel() }}
         combo={engine.comboLabel()}
         onExit={exit}
         screen={screen}
         deck={deck}
         controls="Read the picture, type the number and press Enter. Skip loads a new puzzle."
+        tempo={tempo}
+        running={!result}
       />
 
       {result && (

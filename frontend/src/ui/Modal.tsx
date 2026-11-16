@@ -6,6 +6,7 @@
 import { useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { Button } from './Button';
+import { PixelIcon } from './PixelIcon';
 
 interface ModalProps {
   open: boolean;
@@ -26,7 +27,7 @@ export function Modal({ open, title, onClose, children }: ModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-[#03020c]/80 backdrop-blur-sm flex items-center justify-center p-3 fade-in"
+      className="fixed inset-0 z-50 bg-[var(--blue)] flex items-center justify-center p-3 fade-in"
       onClick={onClose}
     >
       <div
@@ -36,10 +37,10 @@ export function Modal({ open, title, onClose, children }: ModalProps) {
         aria-label={title}
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="flex justify-between items-center p-4 border-b-2 border-[var(--line)]">
-          <h2 className="pixel text-base sm:text-lg neon-yellow">{title}</h2>
+        <div className="flex justify-between items-center p-4 border-b-[3px] border-[var(--ink)]">
+          <h2 className="panel-title">{title}</h2>
           <Button variant="secondary" className="px-3 py-1.5" onClick={onClose} aria-label="Close">
-            ✕
+            <PixelIcon name="close" />
           </Button>
         </div>
         <div className="p-4">{children}</div>

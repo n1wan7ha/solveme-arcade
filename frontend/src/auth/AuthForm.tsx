@@ -7,8 +7,11 @@ import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiErrorMessage } from '../api/http';
+import { coin } from '../games/shared/audio';
+import { SnakeDemo } from '../games/snake/SnakeDemo';
 import { Button } from '../ui/Button';
 import { useAuthStore } from '../store/authStore';
+import { PixelIcon } from '../ui/PixelIcon';
 
 type Mode = 'login' | 'register';
 
@@ -28,6 +31,7 @@ export function AuthForm({ mode }: { mode: Mode }) {
     setBusy(true);
     try {
       await action({ username: username.trim(), password });
+      coin();
       navigate('/dashboard');
     } catch (err) {
       setError(apiErrorMessage(err));
@@ -37,57 +41,59 @@ export function AuthForm({ mode }: { mode: Mode }) {
   }
 
   return (
-    <section className="flex-1 flex flex-col items-center justify-center gap-6 fade-in py-6">
-      <div className="text-center select-none">
-        <div className="flex gap-1.5 justify-center mb-5" aria-hidden>
-          {LOADER_SQUARES.map((delay, i) => (
-            <i
-              key={delay}
-              className="sq"
-              style={{
-                animationDelay: `${delay}s`,
-                background: i === LOADER_SQUARES.length - 1 ? 'var(--pink)' : undefined,
-                boxShadow: i === LOADER_SQUARES.length - 1 ? '0 0 10px var(--pink)' : undefined,
-              }}
-            />
-          ))}
+    <section className="flex-1 grid lg:grid-cols-[auto_minmax(0,420px)] gap-8 lg:gap-14 items-center justify-center fade-in py-4 sm:py-8">
+      {/* Attract mode: a demo cabinet playing by itself */}
+      <div className="order-2 lg:order-1 justify-self-center w-full max-w-[300px] lg:max-w-[340px]">
+        <div className="cabinet t-r">
+          <div className="marquee text-center">
+            <div className="bulbs mb-2" aria-hidden />
+            <span className="pixel text-[0.6rem] inline-flex items-center gap-2"><PixelIcon name="snake" size={18} /> SNAKE</span>
+          </div>
+          <div className="bezel mt-3">
+            <SnakeDemo />
+          </div>
         </div>
-        <h1 className="pixel text-3xl sm:text-5xl leading-tight">
-          <span className="neon-cyan">SOLVE</span>
-          <span className="neon-pink">ME</span>
-        </h1>
-        <p className="pixel text-xs sm:text-sm neon-yellow mt-3 tracking-[0.4em]">ARCADE</p>
-        <p className="pixel text-[0.6rem] sm:text-xs neon-pink mt-6 blink">INSERT COIN</p>
       </div>
 
-      <div className="cabinet t-r w-full max-w-sm">
-        <div className="marquee text-center">
-          <h2 className="pixel text-xs sm:text-sm neon-yellow">
-            {mode === 'login' ? 'PLAYER LOGIN' : 'NEW PLAYER'}
-          </h2>
+      <div className="order-1 lg:order-2 w-full max-w-[420px] justify-self-center">
+        <div className="text-center select-none mb-8">
+          <div className="flex gap-1.5 justify-center mb-6" aria-hidden>
+            {LOADER_SQUARES.map((delay, i) => (
+              <i
+                key={delay}
+                className="sq"
+                style={{ animationDelay: `${delay}s`, background: i % 2 ? 'var(--red)' : undefined }}
+              />
+            ))}
+          </div>
+          <h1 className="print text-4xl sm:text-5xl leading-tight">SOLVE<br />ME</h1>
+          <div className="stripe w-48 mx-auto mt-5" />
+          <p className="pixel text-[0.6rem] c-white mt-3 tracking-[0.5em]">ARCADE</p>
         </div>
 
-        <div className="pt-4 px-2 pb-2">
-          <div className="flex gap-2 mb-4">
-            <Link to="/" className={`lbt flex-1 pixel text-[0.6rem] ${mode === 'login' ? 'on' : ''}`}>
+        <div className="card p-5 sm:p-6">
+          <h2 className="panel-title">{mode === 'login' ? 'PLAYER LOGIN' : 'NEW PLAYER'}</h2>
+
+          <div className="grid grid-cols-2 my-4">
+            <Link to="/" className={`lbt pixel text-[0.55rem] ${mode === 'login' ? 'on' : ''}`}>
               LOG IN
             </Link>
-            <Link to="/register" className={`lbt flex-1 pixel text-[0.6rem] ${mode === 'register' ? 'on' : ''}`}>
+            <Link to="/register" className={`lbt pixel text-[0.55rem] -ml-[3px] ${mode === 'register' ? 'on' : ''}`}>
               REGISTER
             </Link>
           </div>
 
           <form onSubmit={handleSubmit}>
-            <label className="lab" htmlFor="username">Player name</label>
+            <label className="lab" htmlFor="username">PLAYER NAME</label>
             <input
               id="username"
-              className="inp mb-3 font-bold"
+              className="inp mb-4"
               autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
             />
-            <label className="lab" htmlFor="password">Password</label>
+            <label className="lab" htmlFor="password">PASSWORD</label>
             <input
               id="password"
               type="password"
@@ -102,22 +108,25 @@ export function AuthForm({ mode }: { mode: Mode }) {
                 3–20 letters, numbers or _ · password 8+ characters
               </p>
             )}
-            <div className="neon-pink text-sm font-bold text-center min-h-6 mt-2" role="alert">
+            <div className="c-red text-sm font-bold text-center min-h-6 mt-2" role="alert">
               {error}
             </div>
             <Button type="submit" className="w-full mt-1 glow" disabled={busy}>
-              {busy ? 'PLEASE WAIT…' : mode === 'login' ? '▶ PRESS START' : '▶ CREATE PLAYER'}
+              {busy ? 'PLEASE WAIT…' : (
+                <>
+                  <PixelIcon name="play" className="mr-2" />
+                  {mode === 'login' ? 'PRESS START' : 'CREATE PLAYER'}
+                </>
+              )}
             </Button>
           </form>
 
           <p className="text-center text-xs muted mt-4">
-            Demo accounts: <b className="text-[var(--text)]">niwantha</b>, <b className="text-[var(--text)]">user</b>,{' '}
-            <b className="text-[var(--text)]">player</b> · Password: <b className="text-[var(--text)]">1234</b>
+            Demo accounts: <b className="c-ink">niwantha</b>, <b className="c-ink">user</b>, <b className="c-ink">player</b> ·
+            Password: <b className="c-ink">1234</b>
           </p>
         </div>
       </div>
-
-      <p className="pixel text-[0.5rem] muted">© SOLVEME ARCADE · 1 CREDIT = 1 PLAY</p>
     </section>
   );
 }

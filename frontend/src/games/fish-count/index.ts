@@ -8,7 +8,7 @@ import { FishCountGame } from './FishCountGame';
 export const fishCount: GameEntry = {
   slug: 'fish-count',
   name: 'Fish Count',
-  emoji: '🐟',
+  icon: 'fish',
   category: 'fish',
   type: 'puzzle',
   color: 't-r',

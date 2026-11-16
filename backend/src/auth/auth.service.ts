@@ -159,6 +159,6 @@ export class AuthService {
   }
 
   private toAuthUser(user: AuthUser): AuthUser {
-    return { id: user.id, username: user.username, role: user.role };
+    return { id: user.id, username: user.username, role: user.role, initials: user.initials ?? null };
   }
 }

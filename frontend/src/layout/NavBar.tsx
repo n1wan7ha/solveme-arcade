@@ -1,12 +1,13 @@
 /**
- * Why this exists: the sticky top bar, styled as the arcade's lit sign, with
- * the player's name ("1UP") and a logout link when signed in.
+ * Why this exists: the top bar, printed like an arcade sign: logo, a gamepad
+ * badge when one is connected, the player's name and a logout link.
  * Ported from the student's prototype; React version drafted with an LLM (Claude Code).
  */
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import { PixelIcon } from '../ui/PixelIcon';
 
-export function NavBar() {
+export function NavBar({ gamepad }: { gamepad: boolean }) {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
@@ -17,33 +18,33 @@ export function NavBar() {
   }
 
   return (
-    <nav className="sticky top-0 z-40 border-b-2 border-[var(--line)] bg-[#07051acc] backdrop-blur-md shadow-[0_2px_0_var(--ink),0_10px_30px_#ff2e8814]">
-      <div className="max-w-7xl mx-auto px-3 sm:px-5 h-14 flex items-center justify-between gap-2">
-        <Link to={user ? '/dashboard' : '/'} className="pixel text-sm sm:text-lg select-none flex items-center gap-2">
-          <span className="neon-cyan">SOLVE</span>
-          <span className="neon-pink text-xs sm:text-sm">●</span>
-          <span className="neon-pink">ME</span>
-          <span className="hidden sm:inline neon-yellow text-[0.55rem] ml-1 self-end mb-1">ARCADE</span>
+    <nav className="sticky top-0 z-40 bg-[var(--white)] border-b-4 border-[var(--ink)]">
+      <div className="max-w-6xl mx-auto px-3 sm:px-6 h-14 flex items-center justify-between gap-2">
+        <Link to={user ? '/dashboard' : '/'} className="pixel text-sm sm:text-base select-none flex items-center gap-1">
+          <span className="c-blue">SOLVE</span>
+          <span className="inline-block w-3 h-3 bg-[var(--red)] border-2 border-[var(--ink)] mx-1" />
+          <span className="c-red">ME</span>
         </Link>
-        {user && (
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:flex items-center gap-2 text-[0.6rem] pixel muted">
-              <span className="neon-yellow blink">1UP</span>
+        <div className="flex items-center gap-2 sm:gap-3">
+          {gamepad && (
+            <span className="pixel text-[0.5rem] bg-[var(--blue)] c-white px-2 py-1.5 border-2 border-[var(--ink)]" title="Gamepad connected">
+              <PixelIcon name="gamepad" size={14} className="mr-1" />PAD
             </span>
-            <span className="bd rounded-md px-3 py-1 text-sm font-bold flex items-center gap-2 bg-[#05030f]">
-              <i className="w-2 h-2 rounded-full bg-[var(--green)] shadow-[0_0_8px_var(--green)] inline-block" />
-              {user.username}
-            </span>
-            <button
-              type="button"
-              className="pixel text-[0.6rem] muted hover:text-[var(--pink)] cursor-pointer transition-colors"
-              onClick={handleLogout}
-            >
-              LOGOUT
-            </button>
-          </div>
-        )}
+          )}
+          {user && (
+            <>
+              <span className="pixel text-[0.55rem] bg-[var(--ink)] c-white px-2.5 py-2 flex items-center gap-2">
+                <span className="c-red">1P</span>
+                {user.username.toUpperCase()}
+              </span>
+              <button type="button" className="pixel text-[0.55rem] underline underline-offset-4 cursor-pointer hover:text-[var(--red)]" onClick={handleLogout}>
+                LOGOUT
+              </button>
+            </>
+          )}
+        </div>
       </div>
+      <div className="stripe" />
     </nav>
   );
 }

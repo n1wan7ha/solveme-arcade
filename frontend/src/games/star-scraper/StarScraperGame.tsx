@@ -49,7 +49,7 @@ export function StarScraperGame(props: GameProps) {
       engine={engine}
       draw={draw}
       canvasRef={canvasRef}
-      controls="← → / A D or drag on the track · P to pause"
+      controls="Left / right arrows or A / D, or drag on the track · P to pause"
       canvasProps={{
         onPointerDown: (e) => engine.steerTo(toGameFraction(e)),
         onPointerMove: (e) => engine.steerTo(toGameFraction(e)),

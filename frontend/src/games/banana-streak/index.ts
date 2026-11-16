@@ -8,7 +8,7 @@ import { BananaStreakGame } from './BananaStreakGame';
 export const bananaStreak: GameEntry = {
   slug: 'banana-streak',
   name: 'Banana Streak',
-  emoji: '🍌',
+  icon: 'banana',
   category: 'banana',
   type: 'puzzle',
   color: 't-b',

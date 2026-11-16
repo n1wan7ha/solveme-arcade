@@ -1,58 +1,47 @@
 /*
- * Why this exists: Tailwind plus the arcade design system: neon tube colours,
- * CRT scanlines, the cabinet frame around every game, pixel fonts and
- * animations. Custom classes sit in Tailwind layers so utility classes can
- * still override them without "!important".
- * Ported from the student's prototype; neon arcade restyle drafted with an LLM (Claude Code).
+ * Why this exists: Tailwind plus the arcade design system. Flat, solid red,
+ * white and blue with ink outlines, styled after printed 80s arcade
+ * cabinets: chamfered panels, marquees with chasing bulbs, LED digits with
+ * unlit "8"s behind them, coin tokens and prize tickets. No gradients, glows
+ * or blur. Custom classes sit in Tailwind layers so utility classes can still
+ * override them without "!important".
+ * Ported from the student's prototype; arcade restyle drafted with an LLM (Claude Code).
  */
 @import "tailwindcss";
 
 @layer base {
   :root {
-    /* Arcade hall */
-    --bg: #07051a;
-    --panel: #130e2e;
-    --panel-2: #1c1543;
-    --line: #3b2f80;
-    --text: #f2efff;
-    --muted: #a39dd3;
-    --ink: #03020c; /* hard shadows and outlines */
+    --blue: #1f45d6;
+    --red: #e8253a;
+    --white: #ffffff;
+    --ink: #0b1238; /* outlines, text, monitor bezels */
+    --ghost: #dde4ff; /* unlit LED segments */
+    --muted: #5a618c;
 
-    /* Neon tubes */
-    --pink: #ff2e88;
-    --cyan: #27e8ff;
-    --yellow: #ffd23f;
-    --green: #3dff8a;
-    --r: #ff3b56; /* red, kept for the old class names */
-    --b: #4d6bff; /* blue, kept for the old class names */
-
-    color-scheme: dark;
+    /* old names, still used by some classes */
+    --b: var(--blue);
+    --r: var(--red);
   }
   html {
-    background: var(--bg);
+    background: var(--blue);
   }
   body {
     margin: 0;
     min-height: 100vh;
     font-family: 'Space Grotesk', system-ui, sans-serif;
-    color: var(--text);
-    background:
-      radial-gradient(ellipse 80% 50% at 50% -10%, #ff2e8833, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 100% 20%, #27e8ff1f, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 0% 40%, #7c3aed26, transparent 60%),
-      var(--bg);
-    background-attachment: fixed;
+    color: var(--ink);
+    background: var(--blue);
   }
   canvas {
     touch-action: none;
   }
   ::selection {
-    background: var(--pink);
-    color: #fff;
+    background: var(--red);
+    color: var(--white);
   }
   :focus-visible {
-    outline: 3px solid var(--cyan);
-    outline-offset: 2px;
+    outline: 4px solid var(--red);
+    outline-offset: 3px;
   }
 }
 
@@ -60,73 +49,111 @@
   /* ---------- Type ---------- */
   .dot {
     font-family: 'Doto', 'DotGothic16', ui-monospace, monospace;
-    font-weight: 800;
+    font-weight: 900;
     letter-spacing: 0.02em;
   }
   .pixel {
     font-family: 'Press Start 2P', 'DotGothic16', ui-monospace, monospace;
     font-weight: 400;
     letter-spacing: 0.04em;
-    line-height: 1.35;
+    line-height: 1.4;
   }
-  .neon-pink { color: #ffd6ea; text-shadow: 0 0 4px #ff2e88, 0 0 12px #ff2e88, 0 0 28px #ff2e8899; }
-  .neon-cyan { color: #d8fbff; text-shadow: 0 0 4px #27e8ff, 0 0 12px #27e8ff, 0 0 28px #27e8ff99; }
-  .neon-yellow { color: #fff4c9; text-shadow: 0 0 4px #ffd23f, 0 0 12px #ffd23f, 0 0 26px #ffd23f88; }
-  .neon-green { color: #d9ffe8; text-shadow: 0 0 4px #3dff8a, 0 0 12px #3dff8a, 0 0 26px #3dff8a88; }
+  /* Big title lettering with a hard, offset print shadow. */
+  .print {
+    font-family: 'Press Start 2P', monospace;
+    color: var(--white);
+    text-shadow: 3px 3px 0 var(--red), 6px 6px 0 var(--ink);
+  }
+  .c-blue { color: var(--blue); }
+  .c-red { color: var(--red); }
+  .c-ink { color: var(--ink); }
+  .c-white { color: var(--white); }
   .muted { color: var(--muted); }
+  .tx-r { color: var(--red); }
+  .tx-b { color: var(--blue); }
+  .bg-r { background: var(--red); color: var(--white); }
+  .bg-b { background: var(--blue); color: var(--white); }
+  .bd { border: 3px solid var(--ink); }
 
-  .bd { border: 2px solid var(--line); }
-  .bg-r { background: var(--pink); color: #fff; }
-  .bg-b { background: var(--cyan); color: var(--ink); }
-  .tx-r { color: var(--pink); }
-  .tx-b { color: var(--cyan); }
-
-  /* ---------- Panels ---------- */
-  .card {
+  /* LED digits: lit number over its unlit "8"s (data-ghost). */
+  .lcd {
     position: relative;
-    background: linear-gradient(180deg, var(--panel-2), var(--panel));
-    border: 2px solid var(--line);
-    border-radius: 14px;
-    box-shadow: 0 0 0 2px var(--ink), 6px 6px 0 2px var(--ink), 0 0 40px #7c3aed1f;
+    display: inline-block;
+    font-family: 'Doto', ui-monospace, monospace;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    isolation: isolate;
+  }
+  .lcd::before {
+    content: attr(data-ghost);
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: var(--ghost);
+    z-index: -1;
+  }
+
+  /* ---------- Panels: white with chamfered corners and an ink outline ---------- */
+  .card {
+    --cut: 16px;
+    position: relative;
+    isolation: isolate;
+    background: var(--ink);
+    padding: 3px;
+    clip-path: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    z-index: -1;
+    background: var(--panel-fill, var(--white));
+    clip-path: polygon(calc(var(--cut) - 1px) 0, 100% 0, 100% calc(100% - var(--cut) + 1px), calc(100% - var(--cut) + 1px) 100%, 0 100%, 0 calc(var(--cut) - 1px));
   }
   .panel-title {
     font-family: 'Press Start 2P', monospace;
     font-size: 0.8rem;
-    letter-spacing: 0.08em;
-    display: flex;
+    letter-spacing: 0.06em;
+    display: inline-flex;
     align-items: center;
     gap: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--ink);
+    color: var(--white);
   }
   .panel-title::before {
     content: '';
-    width: 10px;
-    height: 10px;
-    background: currentColor;
-    box-shadow: 0 0 10px currentColor;
+    width: 8px;
+    height: 8px;
+    background: var(--red);
+  }
+  /* Red / white / blue racing stripe. Hard stops, so the bands stay solid. */
+  .stripe {
+    height: 12px;
+    background: linear-gradient(180deg, var(--red) 0 33.3%, var(--white) 33.3% 66.6%, var(--blue) 66.6% 100%);
   }
 
-  /* ---------- Buttons: chunky arcade push buttons ---------- */
+  /* ---------- Buttons: keycaps that press down ---------- */
   .btn,
   .btn2 {
-    font: inherit;
     font-family: 'Press Start 2P', monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
     line-height: 1.4;
-    border: 2px solid var(--ink);
-    border-radius: 10px;
-    padding: 0.8rem 1.1rem;
-    box-shadow: inset 0 -4px 0 #0005, inset 0 2px 0 #fff4, 0 4px 0 var(--ink);
-    transition: transform 0.08s, box-shadow 0.08s, filter 0.15s;
+    border: 3px solid var(--ink);
+    border-bottom-width: 7px;
+    border-radius: 6px;
+    padding: 0.75rem 1.1rem 0.65rem;
     cursor: pointer;
+    transition: transform 0.06s, border-bottom-width 0.06s;
   }
-  .btn { background: linear-gradient(180deg, #ff4f9c, #e0156c); color: #fff; text-shadow: 0 2px 0 #0006; }
-  .btn2 { background: linear-gradient(180deg, #2a2160, #1b1543); color: var(--text); border-color: var(--line); }
-  .btn:hover,
-  .btn2:hover { filter: brightness(1.15); transform: translateY(-1px); box-shadow: inset 0 -4px 0 #0005, inset 0 2px 0 #fff4, 0 5px 0 var(--ink), 0 0 18px #ff2e8866; }
-  .btn2:hover { box-shadow: inset 0 -4px 0 #0005, inset 0 2px 0 #fff2, 0 5px 0 var(--ink), 0 0 16px #27e8ff55; }
+  .btn { background: var(--red); color: var(--white); }
+  .btn2 { background: var(--white); color: var(--ink); }
+  .btn:hover { background: var(--ink); }
+  .btn2:hover { background: var(--ghost); }
   .btn:active,
-  .btn2:active { transform: translateY(4px); box-shadow: inset 0 -1px 0 #0005, 0 0 0 var(--ink); }
+  .btn2:active { transform: translateY(4px); border-bottom-width: 3px; }
   .btn:disabled,
   .btn2:disabled { opacity: 0.6; cursor: wait; transform: none; }
 
@@ -134,260 +161,221 @@
   .inp {
     width: 100%;
     font: inherit;
-    color: var(--green);
-    border: 2px solid var(--line);
-    border-radius: 8px;
-    padding: 0.7rem 0.9rem;
-    background: #05030f;
+    font-weight: 700;
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    border-radius: 0;
+    padding: 0.65rem 0.9rem;
+    background: var(--white);
     outline: none;
-    caret-color: var(--green);
-    box-shadow: inset 0 0 14px #000;
   }
-  .inp::placeholder { color: #3dff8a55; }
-  .inp:focus { border-color: var(--cyan); box-shadow: inset 0 0 14px #000, 0 0 0 3px #27e8ff33, 0 0 18px #27e8ff44; }
+  .inp::placeholder { color: var(--ghost); }
+  .inp:focus { background: var(--ghost); }
 
   .lab {
     display: block;
-    font-size: 0.66rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.16em;
-    margin-bottom: 0.35rem;
-    color: var(--muted);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.45rem;
+    color: var(--ink);
   }
 
   .lbt {
-    padding: 0.4rem 0.7rem;
-    border-radius: 8px;
+    padding: 0.45rem 0.7rem;
     font-weight: 700;
     font-size: 0.85rem;
-    border: 2px solid transparent;
+    border: 3px solid var(--ink);
+    background: var(--white);
+    color: var(--ink);
     white-space: nowrap;
     cursor: pointer;
     text-align: center;
-    color: var(--muted);
-    transition: color 0.15s, background 0.15s;
   }
-  .lbt:hover { color: var(--text); background: #ffffff0d; }
-  .lbt.on { background: #27e8ff1a; color: var(--cyan); border-color: var(--cyan); box-shadow: 0 0 12px #27e8ff44; }
+  .lbt:hover { background: var(--ghost); }
+  .lbt.on { background: var(--ink); color: var(--white); }
 
-  /* ---------- Tiles (game cards, stat tiles) ---------- */
+  /* ---------- Game tiles: mini cabinets ---------- */
   .tile {
-    --tone: var(--cyan);
+    --tone: var(--blue);
+    --tone-text: var(--white);
+    --cut: 12px;
     position: relative;
-    background: linear-gradient(180deg, var(--panel-2), var(--panel));
-    color: var(--text);
-    border: 2px solid color-mix(in srgb, var(--tone) 55%, var(--line));
-    border-radius: 12px;
-    box-shadow: 0 4px 0 var(--ink), 0 0 0 1px var(--ink), 0 0 22px color-mix(in srgb, var(--tone) 18%, transparent);
-    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    isolation: isolate;
+    background: var(--ink);
+    padding: 3px;
+    color: var(--ink);
+    clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%, 0 var(--cut));
+    transition: transform 0.12s;
     cursor: pointer;
   }
-  .tile:hover {
-    transform: translateY(-4px);
-    border-color: var(--tone);
-    box-shadow: 0 8px 0 var(--ink), 0 0 0 1px var(--ink), 0 0 34px color-mix(in srgb, var(--tone) 45%, transparent);
+  .tile::before {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    z-index: -1;
+    background: var(--white);
+    clip-path: polygon(calc(var(--cut) - 1px) 0, calc(100% - var(--cut) + 1px) 0, 100% calc(var(--cut) - 1px), 100% 100%, 0 100%, 0 calc(var(--cut) - 1px));
   }
-  .tile:active { transform: translateY(2px); box-shadow: 0 0 0 var(--ink), 0 0 20px color-mix(in srgb, var(--tone) 40%, transparent); }
-  .t-b { --tone: var(--cyan); }
-  .t-r { --tone: var(--pink); }
-  .t-w { --tone: var(--yellow); }
+  .tile:hover,
+  .tile:focus-visible { transform: translateY(-6px); }
+  .tile:focus-visible { outline: none; background: var(--red); }
+  .tile:active { transform: translateY(0); }
+  .t-b { --tone: var(--blue); --tone-text: var(--white); }
+  .t-r { --tone: var(--red); --tone-text: var(--white); }
+  .t-w { --tone: var(--ink); --tone-text: var(--white); }
   .tone { color: var(--tone); }
+  .tone-bg { background: var(--tone); color: var(--tone-text); }
 
   /* ---------- Arcade cabinet (the frame around each game) ---------- */
   .cabinet {
-    --tone: var(--cyan);
+    --tone: var(--blue);
+    --tone-text: var(--white);
     position: relative;
-    border-radius: 22px 22px 14px 14px;
+    background: var(--white);
+    border: 4px solid var(--ink);
+    border-top: 0;
     padding: 0 12px 12px;
-    background:
-      linear-gradient(90deg, #ffffff08, transparent 12%, transparent 88%, #ffffff08),
-      linear-gradient(180deg, #221a52, #120d2c 70%);
-    border: 2px solid var(--ink);
-    box-shadow:
-      0 0 0 2px color-mix(in srgb, var(--tone) 40%, var(--line)),
-      0 30px 60px -20px #000,
-      0 0 70px color-mix(in srgb, var(--tone) 22%, transparent);
   }
   .marquee {
     position: relative;
-    margin: 0 -12px;
-    padding: 0.6rem 0.9rem;
-    border-radius: 20px 20px 0 0;
-    border-bottom: 2px solid var(--ink);
-    background:
-      repeating-linear-gradient(90deg, #ffffff0a 0 2px, transparent 2px 6px),
-      linear-gradient(180deg, color-mix(in srgb, var(--tone) 40%, #1b1243), color-mix(in srgb, var(--tone) 14%, #0e0a24));
-    box-shadow: inset 0 -12px 24px #0006, inset 0 2px 0 #fff3;
-    overflow: hidden;
+    margin: 0 -18px;
+    padding: 0.55rem 0.9rem 0.7rem;
+    background: var(--tone);
+    color: var(--tone-text);
+    border: 4px solid var(--ink);
   }
-  .marquee::after {
-    /* sweeping light across the marquee glass */
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(100deg, transparent 30%, #ffffff22 45%, transparent 60%);
-    transform: translateX(-100%);
-    animation: sweep 5s ease-in-out infinite;
-    pointer-events: none;
+  /* Chasing bulbs along the marquee edge. */
+  .bulbs {
+    height: 8px;
+    background: radial-gradient(circle, var(--white) 0 2.5px, transparent 3px) 0 0 / 14px 8px repeat-x;
+    animation: chase 0.7s steps(1) infinite;
   }
   .bezel {
     position: relative;
     padding: 12px;
-    border-radius: 18px;
-    background: linear-gradient(145deg, #050310, #17123a 40%, #050310);
-    box-shadow: inset 0 0 0 2px #000, inset 0 0 30px #000, 0 2px 0 #ffffff14;
+    background: var(--ink);
   }
   .screen {
     position: relative;
     overflow: hidden;
-    border-radius: 14px;
-    background: #000;
-    box-shadow: 0 0 0 2px #000, 0 0 30px color-mix(in srgb, var(--tone) 35%, transparent);
+    background: var(--ink);
   }
-  /* Scanlines, a soft curved-glass vignette and a little reflection. */
-  .crt::after {
+  [data-fx='on'] .screen.power-on { animation: power-on 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  [data-fx='on'] .crt::after {
     content: '';
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 2;
-    border-radius: inherit;
-    background:
-      repeating-linear-gradient(180deg, #0000 0 2px, #00000033 2px 3px),
-      radial-gradient(ellipse at center, transparent 60%, #0000008c 100%),
-      linear-gradient(160deg, #ffffff12 0%, transparent 30%);
-    mix-blend-mode: multiply;
-  }
-  .crt::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 3;
-    border-radius: inherit;
-    background: linear-gradient(160deg, #ffffff14 0%, transparent 28%);
-    animation: flicker 6s infinite;
+    background: repeating-linear-gradient(180deg, transparent 0 2px, rgb(11 18 56 / 0.14) 2px 3px);
   }
   .control-deck {
-    border-radius: 10px;
-    background: linear-gradient(180deg, #2a2063, #160f35);
-    border: 2px solid var(--ink);
-    box-shadow: inset 0 2px 0 #ffffff1a, inset 0 -6px 12px #0007;
+    background: var(--tone);
+    color: var(--tone-text);
+    border: 3px solid var(--ink);
   }
   .hud {
-    border-radius: 10px;
-    background: #05030f;
-    border: 2px solid var(--line);
-    box-shadow: inset 0 0 18px #000;
+    background: var(--white);
+    border: 3px solid var(--ink);
     padding: 0.5rem 0.55rem;
     min-width: 0;
   }
   @media (min-width: 640px) {
-    .hud { padding: 0.7rem 0.8rem; }
+    .hud { padding: 0.65rem 0.8rem; }
   }
   .hud-label {
     font-family: 'Press Start 2P', monospace;
     font-size: 0.5rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     color: var(--muted);
   }
   .hud-value {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(0.68rem, 2.4vw, 1.35rem);
-    line-height: 1.5;
-    font-variant-numeric: tabular-nums;
+    font-size: clamp(0.95rem, 3.6vw, 2.4rem);
   }
   .arcade-btn {
-    width: 52px;
-    height: 52px;
+    width: 54px;
+    height: 54px;
     border-radius: 999px;
-    border: 3px solid var(--ink);
+    border: 4px solid var(--ink);
     display: grid;
     place-items: center;
     font-size: 1.05rem;
-    color: #fff;
+    color: var(--white);
     cursor: pointer;
-    background: radial-gradient(circle at 35% 30%, #fff6 0 12%, transparent 13%), var(--btn, var(--pink));
-    box-shadow: inset 0 -6px 0 #0006, 0 5px 0 var(--ink), 0 0 18px color-mix(in srgb, var(--btn, var(--pink)) 55%, transparent);
-    transition: transform 0.07s, box-shadow 0.07s;
+    background: var(--btn, var(--red));
+    box-shadow: 0 6px 0 var(--ink);
+    transition: transform 0.06s, box-shadow 0.06s;
   }
-  .arcade-btn:active { transform: translateY(4px); box-shadow: inset 0 -2px 0 #0006, 0 1px 0 var(--ink); }
+  .arcade-btn:active { transform: translateY(5px); box-shadow: 0 1px 0 var(--ink); }
 
-  /* ---------- LED segment bar (XP, progress) ---------- */
-  .seg { height: 14px; border-radius: 2px; background: #1a1440; box-shadow: inset 0 0 0 1px #000; }
-  .seg.on { background: var(--seg, var(--pink)); box-shadow: 0 0 8px var(--seg, var(--pink)), inset 0 -3px 0 #0004; }
+  /* ---------- Segment bar (XP, progress) ---------- */
+  .seg { height: 16px; background: var(--white); border: 2px solid var(--ink); }
+  .seg.on { background: var(--seg, var(--red)); }
+
+  /* ---------- Coin tokens (stats) ---------- */
+  .token {
+    --face: var(--white);
+    --rim: var(--ink);
+    width: clamp(96px, 22vw, 132px);
+    aspect-ratio: 1;
+    border-radius: 999px;
+    background: var(--face);
+    border: 4px solid var(--ink);
+    box-shadow: inset 0 0 0 6px var(--face), inset 0 0 0 9px var(--rim), 0 6px 0 var(--ink);
+    display: grid;
+    place-items: center;
+  }
+
+  /* ---------- Prize tickets (achievements) ---------- */
+  .ticket {
+    --notch: 9px;
+    position: relative;
+    background: var(--red);
+    color: var(--white);
+    mask:
+      radial-gradient(circle at 0 50%, transparent var(--notch), #000 calc(var(--notch) + 0.5px)) left / 51% 100% no-repeat,
+      radial-gradient(circle at 100% 50%, transparent var(--notch), #000 calc(var(--notch) + 0.5px)) right / 51% 100% no-repeat;
+  }
+  .ticket.locked { background: var(--ghost); color: var(--muted); }
 
   /* ---------- Animations ---------- */
-  .fade-in { animation: fi 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
-  .float { display: inline-block; animation: fl 3s ease-in-out infinite; }
-  .glow { animation: gl 1.6s infinite; }
-  .blink { animation: blink 1.1s steps(2, start) infinite; }
+  .fade-in { animation: fi 0.35s steps(6) both; }
+  .float { display: inline-block; animation: fl 1.2s steps(2) infinite; }
+  .blink { animation: blink 1s steps(2, start) infinite; }
   .shake { animation: sk 0.4s; }
-  .pop { animation: pp 0.45s; }
+  .pop { animation: pp 0.4s steps(4); }
+  .glow { animation: nudge 1.4s steps(2) infinite; }
   .sq {
     width: 14px;
     height: 14px;
-    border: 2px solid var(--ink);
-    background: var(--cyan);
-    box-shadow: 0 0 10px var(--cyan);
-    animation: snk 1s ease-in-out infinite;
-  }
-  .fl {
-    position: fixed;
-    bottom: -60px;
-    z-index: 0;
-    opacity: 0.12;
-    animation: rise linear infinite;
-    pointer-events: none;
-    filter: saturate(1.4) drop-shadow(0 0 8px #ff2e88);
+    border: 3px solid var(--ink);
+    background: var(--white);
+    animation: snk 0.8s steps(2) infinite;
   }
 }
 
-/* ---------- The hall: perspective neon floor + a CRT film over everything ---------- */
-.hall-floor {
-  position: fixed;
-  left: -50%;
-  right: -50%;
-  bottom: 0;
-  height: 45vh;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(0deg, transparent 0 calc(100% - 2px), #ff2e8855 calc(100% - 2px)) 0 0 / 100% 48px,
-    linear-gradient(90deg, transparent 0 calc(100% - 2px), #ff2e8840 calc(100% - 2px)) 0 0 / 64px 100%;
-  transform: perspective(380px) rotateX(62deg);
-  transform-origin: bottom;
-  mask-image: linear-gradient(0deg, #000 10%, transparent 90%);
-  animation: floor 2.4s linear infinite;
-}
-.hall-stars {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-image:
-    radial-gradient(1px 1px at 12% 18%, #fff9, transparent),
-    radial-gradient(1px 1px at 72% 12%, #fff8, transparent),
-    radial-gradient(1.5px 1.5px at 40% 30%, #27e8ffaa, transparent),
-    radial-gradient(1px 1px at 88% 40%, #fff7, transparent),
-    radial-gradient(1.5px 1.5px at 22% 52%, #ff2e88aa, transparent),
-    radial-gradient(1px 1px at 58% 8%, #fff6, transparent),
-    radial-gradient(1px 1px at 95% 70%, #fff5, transparent),
-    radial-gradient(1px 1px at 5% 80%, #fff5, transparent);
-  animation: twinkle 4s ease-in-out infinite alternate;
-}
-.hall-film {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  pointer-events: none;
-  background: repeating-linear-gradient(180deg, #ffffff05 0 1px, transparent 1px 3px);
+/* Phones held sideways: portrait games need the phone upright. */
+.rotate-hint { display: none; }
+@media (orientation: landscape) and (max-height: 520px) {
+  .rotate-hint {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    background: var(--blue);
+    color: var(--white);
+    text-align: center;
+  }
 }
 
 /*
- * Screen sizes. Action games are 7:10 portrait and take the window height
- * minus the nav, marquee and bezel (about 230px); puzzles get a wide screen.
+ * Screen sizes. Action games are 7:10 portrait and fill the window height
+ * minus the marquee and bezel (the nav bar is hidden while playing).
  */
 .stage-portrait {
   width: min(100%, calc((100dvh - 250px) * 0.7));
@@ -397,42 +385,38 @@
   width: 100%;
 }
 @media (min-width: 1024px) {
-  .stage-portrait { width: min(780px, max(380px, calc((100dvh - 200px) * 0.7))); }
-  .stage-wide { width: min(58vw, 820px); }
+  .stage-portrait { width: min(820px, max(380px, calc((100dvh - 185px) * 0.7))); }
+  .stage-wide { width: min(58vw, 860px); }
 }
 
-/* Fullscreen play: just the glowing screen, as big as the display allows */
+/* Fullscreen play: just the screen, as big as the display allows */
 .game-stage:fullscreen {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #000;
-  border-radius: 0;
+  background: var(--ink);
   width: 100% !important;
 }
 .game-stage:fullscreen canvas {
   height: 100vh !important;
   width: auto !important;
-  border-radius: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }
 
-@keyframes fi { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-@keyframes fl { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-6px) rotate(4deg); } }
-@keyframes gl {
-  0%, 100% { box-shadow: inset 0 -4px 0 #0005, inset 0 2px 0 #fff4, 0 4px 0 var(--ink), 0 0 0 0 #ff2e8899; }
-  50% { box-shadow: inset 0 -4px 0 #0005, inset 0 2px 0 #fff4, 0 4px 0 var(--ink), 0 0 0 10px #ff2e8800; }
-}
+@keyframes fi { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes fl { 50% { transform: translateY(-4px); } }
 @keyframes blink { to { visibility: hidden; } }
 @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
-@keyframes snk { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes snk { 50% { transform: translateY(-8px); } }
 @keyframes sk { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
-@keyframes pp { 50% { transform: scale(1.03); box-shadow: 0 0 0 6px #3dff8a55; } }
-@keyframes rise { to { transform: translateY(-115vh) rotate(360deg); } }
-@keyframes sweep { 0%, 60% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-@keyframes floor { to { background-position: 0 48px, 0 0; } }
-@keyframes twinkle { from { opacity: 0.5; } to { opacity: 1; } }
-@keyframes flicker { 0%, 96%, 100% { opacity: 1; } 97% { opacity: 0.6; } 98% { opacity: 1; } 99% { opacity: 0.8; } }
+@keyframes pp { 50% { transform: scale(1.03); } }
+@keyframes nudge { 50% { transform: translateY(-3px); } }
+@keyframes chase { 50% { background-position: 7px 0; } }
+@keyframes power-on {
+  0% { transform: scale(1, 0.004); filter: brightness(4); }
+  45% { transform: scale(1, 0.004); filter: brightness(4); }
+  100% { transform: none; filter: none; }
+}

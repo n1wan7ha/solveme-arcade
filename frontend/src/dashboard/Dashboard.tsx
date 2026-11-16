@@ -5,6 +5,7 @@
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { coin } from '../games/shared/audio';
 import { useAuthStore } from '../store/authStore';
 import { DotText } from '../ui/DotText';
 import { Achievements } from './Achievements';
@@ -24,7 +25,7 @@ export function Dashboard() {
   const [pickerOpen, setPickerOpen] = useState(false);
 
   if (!user || !runs) {
-    return <DotText className="pixel text-sm neon-cyan blink m-auto">LOADING…</DotText>;
+    return <DotText className="pixel text-sm c-white blink m-auto">LOADING…</DotText>;
   }
 
   const summary = summarise(runs);
@@ -34,9 +35,13 @@ export function Dashboard() {
     <section className="fade-in space-y-4 sm:space-y-6">
       <WelcomeCard
         username={user.username}
+        initials={user.initials}
         summary={summary}
         lastRun={runs[0]}
-        onStart={() => setPickerOpen(true)}
+        onStart={() => {
+          coin();
+          setPickerOpen(true);
+        }}
         onPlay={play}
       />
       <StatsGrid summary={summary} />

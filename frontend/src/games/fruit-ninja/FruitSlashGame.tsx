@@ -24,7 +24,7 @@ export function FruitSlashGame(props: GameProps) {
       engine={engine}
       draw={drawFruitSlash}
       canvasRef={canvasRef}
-      controls="Drag / swipe across fruit to slice it. Avoid bombs 💣. Golden 🍍 = 5x points. P to pause."
+      controls="Drag / swipe across fruit to slice it. Avoid bombs. Golden pineapple = 5x points. P to pause."
       canvasProps={{
         onPointerDown: (e) => {
           e.currentTarget.setPointerCapture(e.pointerId); // keep the swipe if it leaves the canvas

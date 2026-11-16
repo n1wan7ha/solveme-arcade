@@ -10,6 +10,7 @@ export interface AuthUser {
   id: string;
   username: string;
   role: Role;
+  initials?: string | null; // high-score tag; only on responses read from the database
 }
 
 /** Claims inside the short-lived access JWT. */
